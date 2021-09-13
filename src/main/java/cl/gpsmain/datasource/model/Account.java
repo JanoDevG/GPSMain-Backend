@@ -29,6 +29,9 @@ public class Account extends Customer {
     @JsonProperty("mail")
     private String mail;
 
+    @JsonProperty("password")
+    private String password;
+
     private static class Profile {
 
         @JsonProperty("profile")
