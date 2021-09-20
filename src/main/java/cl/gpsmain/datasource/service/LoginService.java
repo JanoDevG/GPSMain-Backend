@@ -1,6 +1,6 @@
 package cl.gpsmain.datasource.service;
 
-import cl.gpsmain.datasource.controller.repository.LoginRepository;
+import cl.gpsmain.datasource.service.repository.LoginRepository;
 import cl.gpsmain.datasource.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

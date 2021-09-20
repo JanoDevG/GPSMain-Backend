@@ -1,4 +1,4 @@
-package cl.gpsmain.datasource.controller.repository;
+package cl.gpsmain.datasource.service.repository;
 
 
 import cl.gpsmain.datasource.model.Account;
