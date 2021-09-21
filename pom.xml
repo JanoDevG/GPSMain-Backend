@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>cl.gpsmain</groupId>
-	<artifactId>GPSMain-DataSource</artifactId>
+	<artifactId>GPSMain-Backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>GPSMain-DataSource</name>
-	<description>GPSMain-DataSource</description>
+	<name>GPSMain-Backend</name>
+	<description>GPSMain-Backend</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
