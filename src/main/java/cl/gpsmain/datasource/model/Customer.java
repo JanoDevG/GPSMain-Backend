@@ -14,9 +14,6 @@ public class Customer extends Contact {
     @JsonProperty("businessName")
     private String businessName;
 
-    @JsonProperty("address")
-    private String address;
-
     @JsonProperty("_contactId")
     private List<Contact> contactId;
 
@@ -25,11 +22,10 @@ public class Customer extends Contact {
     }
 
     public Customer(final String names, final String surnames, final List<String> numbers, final List<String> mails,
-                    final String clientName, final String businessName, final String address, final List<Contact> contactId) {
+                    final String clientName, final String businessName, final List<Contact> contactId) {
         super(names, surnames, numbers, mails);
         this.clientName = clientName;
         this.businessName = businessName;
-        this.address = address;
         this.contactId = contactId;
     }
 }

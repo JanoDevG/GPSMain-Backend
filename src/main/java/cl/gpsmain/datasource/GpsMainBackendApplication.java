@@ -6,10 +6,10 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableMongoRepositories
-public class GpsMainDataSourceApplication {
+public class GpsMainBackendApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GpsMainDataSourceApplication.class, args);
+        SpringApplication.run(GpsMainBackendApplication.class, args);
     }
 
 }
