@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>cl.gpsmain</groupId>
-	<artifactId>GPSMain-DataSource</artifactId>
+	<artifactId>GPSMain-Backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>GPSMain-DataSource</name>
-	<description>GPSMain-DataSource</description>
+	<name>GPSMain-Backend</name>
+	<description>GPSMain-Backend</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -36,6 +36,10 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

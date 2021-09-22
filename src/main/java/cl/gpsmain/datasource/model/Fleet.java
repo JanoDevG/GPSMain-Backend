@@ -1,17 +1,21 @@
 package cl.gpsmain.datasource.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.UUID;
 
 @Document(collection = "fleet")
-public class Fleet extends GPS {
+public class Fleet {
 
     @MongoId
     @JsonProperty("_id")
-    private UUID id;
+    private ObjectId id;
+
+    @JsonProperty("gpsAssigned")
+    private UUID gpsAssigned;
 
     @JsonProperty("carName")
     private String carName;
@@ -26,14 +30,13 @@ public class Fleet extends GPS {
     private short year;
 
     public Fleet() {
-        super();
+
     }
 
-    public Fleet(final UUID id, final UUID clientId, final String clientSecret, final boolean isActive,
+    public Fleet(final ObjectId id, final UUID clientId, final UUID clientSecret, final boolean isActive,
                  final boolean installed, final UUID id1, final String carName, final String patent,
                  final String chassisNumber, final short year) {
-        super(id, clientId, clientSecret, isActive, installed);
-        this.id = id1;
+        this.id = id;
         this.carName = carName;
         this.patent = patent;
         this.chassisNumber = chassisNumber;
