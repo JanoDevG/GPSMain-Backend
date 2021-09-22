@@ -1,16 +1,10 @@
 package cl.gpsmain.datasource.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Document(collection = "activity")
 public class Activity {
-
-    @JsonProperty("accountId")
-    private UUID accountId;
 
     @JsonProperty("timestamp")
     private LocalDateTime timestamp;
@@ -24,20 +18,12 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(final UUID accountId, final LocalDateTime timestamp, final String activityTitle, final String description) {
-        this.accountId = accountId;
+    public Activity(final LocalDateTime timestamp, final String activityTitle, final String description) {
         this.timestamp = timestamp;
         this.activityTitle = activityTitle;
         this.description = description;
     }
 
-    public UUID getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(final UUID accountId) {
-        this.accountId = accountId;
-    }
 
     public LocalDateTime getTimestamp() {
         return timestamp;
