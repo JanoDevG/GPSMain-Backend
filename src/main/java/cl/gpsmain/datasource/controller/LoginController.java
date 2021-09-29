@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @RestController
-@RequestMapping("/api/loggin")
+@RequestMapping(path = "/api/login")
 public class LoginController {
 
     @Autowired
@@ -20,24 +21,24 @@ public class LoginController {
     @GetMapping("/admin")
     public ResponseEntity<?> loginAdmin(@RequestHeader(value = "X-mail") String mail,
                                         @RequestHeader(value = "X-password") String password) {
-        return loginService.loginAdmin(mail, new String(Base64.getDecoder().decode(password)));
+        return loginService.loginAdmin(mail, password);
     }
 
     @GetMapping("/backoffce")
     public ResponseEntity<?> loginBackOffice(@RequestHeader(value = "X-mail") String mail,
                                              @RequestHeader(value = "X-password") String password) {
-        return loginService.loginBackOffice(mail, new String(Base64.getDecoder().decode(password)));
+        return loginService.loginBackOffice(mail, password);
     }
 
     @GetMapping("/supervisor")
     public ResponseEntity<?> loginSupervisor(@RequestHeader(value = "X-mail") String mail,
                                              @RequestHeader(value = "X-password") String password) {
-        return loginService.loginSupervisor(mail, new String(Base64.getDecoder().decode(password)));
+        return loginService.loginSupervisor(mail, password);
     }
 
     @GetMapping("/manager")
     public ResponseEntity<?> loginManager(@RequestHeader(value = "X-mail") String mail,
                                           @RequestHeader(value = "X-password") String password) {
-        return loginService.loginManager(mail, new String(Base64.getDecoder().decode(password)));
+        return loginService.loginManager(mail, password);
     }
 }

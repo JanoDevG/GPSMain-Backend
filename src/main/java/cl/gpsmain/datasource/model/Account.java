@@ -1,96 +1,77 @@
 package cl.gpsmain.datasource.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.UUID;
 
 @Document(collection = "account")
-public class Account extends Customer {
+public class Account {
 
     @JsonProperty("businessName")
+    @Getter
+    @Setter
     private String businessName;
 
     @JsonProperty("businessId")
-    private String businessId;
+    @Getter
+    @Setter
+    private UUID businessId;
 
     @JsonProperty("profile")
+    @Getter
+    @Setter
     private Profile profile;
 
     @JsonProperty("activity")
+    @Getter
+    @Setter
     private List<Activity> activity;
 
     @JsonProperty("GPSAssigned")
+    @Getter
+    @Setter
     private List<GPS> gPSAssigned;
 
     @JsonProperty("names")
+    @Getter
+    @Setter
     private String names;
 
     @JsonProperty("surnames")
+    @Getter
+    @Setter
     private String surnames;
 
     @JsonProperty("mail")
+    @Getter
+    @Setter
     private String mail;
 
     @JsonProperty("password")
+    @Getter
+    @Setter
     private String password;
 
     private static class Profile {
 
         @JsonProperty("profileName")
+        @Getter
+        @Setter
         private String profileName;
 
         @JsonProperty("permission")
+        @Getter
+        @Setter
         private String permission;
 
         @JsonProperty("key")
-        private String key;
-
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        protected String getProfileName() {
-            return profileName;
-        }
-
-        protected void setProfileName(final String profileName) {
-            this.profileName = profileName;
-        }
-
-        protected Object getPermission() {
-            return permission;
-        }
-
-        protected void setPermission(final String permission) {
-            this.permission = permission;
-        }
-    }
-
-    public Account() {
-        super();
-    }
-
-
-    public Account(final String names, final String surnames, final List<String> numbers,
-                   final List<String> mails, final String clientName, final String businessName,
-                   final String address, final List<Contact> contactId, final String businessName1,
-                   final String businessId, final Profile profile, final List<Activity> activity,
-                   final List<GPS> gPSAssigned, final String names1, final String surnames1,
-                   final String mail, final String password) {
-        this.businessName = businessName1;
-        this.businessId = businessId;
-        this.profile = profile;
-        this.activity = activity;
-        this.gPSAssigned = gPSAssigned;
-        this.names = names1;
-        this.surnames = surnames1;
-        this.mail = mail;
-        this.password = password;
+        @Getter
+        @Setter
+        private UUID key;
     }
 }
 

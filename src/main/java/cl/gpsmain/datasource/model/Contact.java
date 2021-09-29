@@ -1,6 +1,8 @@
 package cl.gpsmain.datasource.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -9,56 +11,23 @@ import java.util.List;
 public class Contact {
 
     @JsonProperty("names")
+    @Getter
+    @Setter
     private String names;
 
     @JsonProperty("surnames")
+    @Getter
+    @Setter
     private String surnames;
 
     @JsonProperty("numbers")
+    @Getter
+    @Setter
     private List<String> numbers;
 
     @JsonProperty("mails")
+    @Getter
+    @Setter
     private List<String> mails;
 
-    public Contact() {
-    }
-
-    public Contact(final String names, final String surnames, final List<String> numbers, final List<String> mails) {
-        this.names = names;
-        this.surnames = surnames;
-        this.numbers = numbers;
-        this.mails = mails;
-    }
-
-    public String getNames() {
-        return names;
-    }
-
-    public void setNames(final String names) {
-        this.names = names;
-    }
-
-    public String getSurnames() {
-        return surnames;
-    }
-
-    public void setSurnames(final String surnames) {
-        this.surnames = surnames;
-    }
-
-    public List<String> getNumbers() {
-        return numbers;
-    }
-
-    public void setNumbers(final List<String> numbers) {
-        this.numbers = numbers;
-    }
-
-    public List<String> getMails() {
-        return mails;
-    }
-
-    public void setMails(final List<String> mails) {
-        this.mails = mails;
-    }
 }
