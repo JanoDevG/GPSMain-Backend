@@ -1,31 +1,29 @@
 package cl.gpsmain.datasource.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 @Document(collection = "customer")
-public class Customer extends Contact {
+public class Customer {
 
     @JsonProperty("clientName")
+    @Getter
+    @Setter
     private String clientName;
 
     @JsonProperty("businessName")
+    @Getter
+    @Setter
     private String businessName;
 
     @JsonProperty("_contactId")
+    @Getter
+    @Setter
     private List<Contact> contactId;
 
-    public Customer() {
-        super();
-    }
 
-    public Customer(final String names, final String surnames, final List<String> numbers, final List<String> mails,
-                    final String clientName, final String businessName, final List<Contact> contactId) {
-        super(names, surnames, numbers, mails);
-        this.clientName = clientName;
-        this.businessName = businessName;
-        this.contactId = contactId;
-    }
 }
