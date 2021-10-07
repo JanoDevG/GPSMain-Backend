@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class LoginService {
 
@@ -23,7 +25,7 @@ public class LoginService {
             RESPONSE.setBody(account);
         } else {
             RESPONSE.setStatus(HttpStatus.NOT_FOUND);
-            RESPONSE.setBody("Cuenta no encontrada");
+            RESPONSE.setBody("Cuenta no encontrada.");
         }
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
