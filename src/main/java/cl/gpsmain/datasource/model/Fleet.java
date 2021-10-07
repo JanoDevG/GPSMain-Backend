@@ -19,7 +19,7 @@ public class Fleet {
     @JsonProperty("gpsAssigned")
     @Getter
     @Setter
-    private UUID gpsAssigned;
+    private ObjectId gpsAssigned;
 
     @JsonProperty("carName")
     @Getter
