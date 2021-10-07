@@ -3,6 +3,7 @@ package cl.gpsmain.datasource.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -10,6 +11,11 @@ import java.util.UUID;
 
 @Document(collection = "account")
 public class Account {
+
+    @JsonProperty("_id")
+    @Getter
+    @Setter
+    private ObjectId _id;
 
     @JsonProperty("businessName")
     @Getter
