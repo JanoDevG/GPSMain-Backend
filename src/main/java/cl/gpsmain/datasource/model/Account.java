@@ -68,10 +68,6 @@ public class Account {
         @Setter
         private String permission;
 
-        @JsonProperty("key")
-        @Getter
-        @Setter
-        private UUID key;
     }
 }
 
