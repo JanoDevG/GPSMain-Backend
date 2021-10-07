@@ -21,6 +21,11 @@ public class Account {
     @Setter
     private UUID businessId;
 
+    @JsonProperty("clientId")
+    @Getter
+    @Setter
+    private UUID clientId;
+
     @JsonProperty("profile")
     @Getter
     @Setter
