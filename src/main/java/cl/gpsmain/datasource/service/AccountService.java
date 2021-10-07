@@ -56,11 +56,11 @@ public class AccountService {
                 if (acc == null) {
                     RESPONSE.setBody("La cuenta no existe. No hay datos que eliminar.");
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+                }else{
+                    accountRepository.delete(acc);
+                    RESPONSE.setBody("La cuenta de: ".concat(acc.getNames()).concat(" fue eliminada exitosamente."));
+                    RESPONSE.setStatus(HttpStatus.OK);
                 }
-                assert acc != null;
-                accountRepository.delete(acc);
-                RESPONSE.setBody("La cuenta de: ".concat(acc.getNames()).concat(" fue eliminada exitosamente."));
-                RESPONSE.setStatus(HttpStatus.OK);
                 break;
             default:
                 RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: X-option)."));
