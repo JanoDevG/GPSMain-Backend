@@ -24,7 +24,7 @@ public class AccountService {
     private static final Response RESPONSE = new Response();
 
     public ResponseEntity<Response> accountService(Account account, String clientId, String clientSecret, String option) {
-        if (!validateTokens(UUID.fromString(clientId), UUID.fromString(clientSecret))) {
+        if (!validateTokens(UUID.fromString(clientId), UUID.fromString(clientSecret), account)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
@@ -56,7 +56,7 @@ public class AccountService {
                 if (acc == null) {
                     RESPONSE.setBody("La cuenta no existe. No hay datos que eliminar.");
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
-                }else{
+                } else {
                     accountRepository.delete(acc);
                     RESPONSE.setBody("La cuenta de: ".concat(acc.getNames()).concat(" fue eliminada exitosamente."));
                     RESPONSE.setStatus(HttpStatus.OK);
@@ -70,7 +70,8 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    private boolean validateTokens(UUID clientId, UUID clientSecret) {
+    private boolean validateTokens(UUID clientId, UUID clientSecret, Account account) {
+        //TODO validar que las KEY también coincidan con el accuntId
         Key key = keyRepository.findByOAuth_ClientIdAndOAuth_ClientSecret(clientId, clientSecret);
         return key != null;
     }

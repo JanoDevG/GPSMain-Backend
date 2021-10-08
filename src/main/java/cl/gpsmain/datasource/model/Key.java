@@ -25,7 +25,7 @@ public class Key {
     @Setter
     private OAuth oAuth;
 
-    private static class Business {
+    public static class Business {
 
         @JsonProperty("name")
         @Getter
@@ -38,7 +38,7 @@ public class Key {
         private UUID id;
     }
 
-    private static class User {
+    public static class User {
 
         @JsonProperty("enterpriseAdmin")
         @Getter
@@ -61,7 +61,7 @@ public class Key {
         private UUID manager;
     }
 
-    private static class OAuth {
+    public static class OAuth {
 
         @JsonProperty("clientId")
         @Getter
