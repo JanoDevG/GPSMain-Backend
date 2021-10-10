@@ -2,7 +2,8 @@ package cl.gpsmain.datasource.service.admin;
 
 import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.model.Response;
-import cl.gpsmain.datasource.service.TokenService;
+import cl.gpsmain.datasource.service.core.ActivityService;
+import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,12 +19,15 @@ public class EnterpriseService {
     private KeyRepository keyRepository;
 
     @Autowired
-    private TokenService tokenService;
+    private ValidationService validationService;
+
+    @Autowired
+    private ActivityService activityService;
 
     private static final Response RESPONSE = new Response();
 
     public ResponseEntity<Response> enterpriseService(String option, String clientId, String clientSecret, String enterpriseName) {
-        if (!tokenService.validateClientSecret(clientSecret, clientId)) {
+        if (validationService.validateClientSecret(clientSecret, clientId)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());

@@ -1,16 +1,15 @@
 package cl.gpsmain.datasource.service;
 
 import cl.gpsmain.datasource.model.Account;
-import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.model.Response;
+import cl.gpsmain.datasource.service.core.ActivityService;
+import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
 import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -22,12 +21,15 @@ public class AccountService {
     private KeyRepository keyRepository;
 
     @Autowired
-    private TokenService tokenService;
+    private ActivityService activityService;
+
+    @Autowired
+    private ValidationService validationService;
 
     private static final Response RESPONSE = new Response();
 
-    public ResponseEntity<Response> accountService(Account account, String clientId, String clientSecret, String option) {
-        if (!tokenService.validateClientSecret(clientSecret, clientId)) {
+    public ResponseEntity<Response> accountService(Account account, String clientId, String clientSecret, String option, String profileId, String userId) {
+        if (validationService.validateClientSecret(clientSecret, clientId)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
@@ -73,9 +75,5 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    private boolean validateTokens(UUID clientId, UUID clientSecret, Account account) {
-        //TODO validar que las KEY también coincidan con el accuntId
-        Key key = keyRepository.findByOAuth_ClientIdAndOAuth_ClientSecret(clientId, clientSecret);
-        return key != null;
-    }
+
 }

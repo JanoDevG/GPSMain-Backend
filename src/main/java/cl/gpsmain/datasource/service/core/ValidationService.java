@@ -1,4 +1,4 @@
-package cl.gpsmain.datasource.service;
+package cl.gpsmain.datasource.service.core;
 
 import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.service.repository.KeyRepository;
@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class TokenService {
+public class ValidationService {
 
     @Autowired
     private KeyRepository keyRepository;
 
     public boolean validateClientSecret(String clientSecret, String clientId) {
         Key key = keyRepository.findByOAuth_ClientIdAndOAuth_ClientSecret(UUID.fromString(clientId), UUID.fromString(clientSecret));
-        return key != null;
+        return key == null;
     }
 }
