@@ -9,17 +9,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("LoginController")
 @RequestMapping(path = "/api/login")
 public class LoginController {
 
     @Autowired
     private LoginService loginService;
 
-    @GetMapping("/loginUser")
+    @GetMapping({"/admin", "/backoffce", "/supervisor", "/manager"})
     public ResponseEntity<Response> loginAdmin(@RequestHeader(value = "X-mail") String mail,
-                                               @RequestHeader(value = "X-password") String password) {
+                                               @RequestHeader(value = "X-password") String password){
         return loginService.loginAccount(mail, password);
     }
-
 }

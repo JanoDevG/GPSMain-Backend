@@ -21,10 +21,13 @@ public class AccountService {
     @Autowired
     private KeyRepository keyRepository;
 
+    @Autowired
+    private TokenService tokenService;
+
     private static final Response RESPONSE = new Response();
 
     public ResponseEntity<Response> accountService(Account account, String clientId, String clientSecret, String option) {
-        if (!validateTokens(UUID.fromString(clientId), UUID.fromString(clientSecret), account)) {
+        if (!tokenService.validateClientSecret(clientSecret, clientId)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
