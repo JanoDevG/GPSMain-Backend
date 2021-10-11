@@ -1,16 +1,15 @@
 package cl.gpsmain.datasource.service;
 
 import cl.gpsmain.datasource.model.Account;
-import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.model.Response;
+import cl.gpsmain.datasource.service.core.ActivityService;
+import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
 import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -21,10 +20,16 @@ public class AccountService {
     @Autowired
     private KeyRepository keyRepository;
 
+    @Autowired
+    private ActivityService activityService;
+
+    @Autowired
+    private ValidationService validationService;
+
     private static final Response RESPONSE = new Response();
 
-    public ResponseEntity<Response> accountService(Account account, String clientId, String clientSecret, String option) {
-        if (!validateTokens(UUID.fromString(clientId), UUID.fromString(clientSecret))) {
+    public ResponseEntity<Response> accountService(Account account, String clientId, String clientSecret, String option, String profileId, String userId) {
+        if (validationService.validateClientSecret(clientSecret, clientId)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
@@ -56,11 +61,11 @@ public class AccountService {
                 if (acc == null) {
                     RESPONSE.setBody("La cuenta no existe. No hay datos que eliminar.");
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+                } else {
+                    accountRepository.delete(acc);
+                    RESPONSE.setBody("La cuenta de: ".concat(acc.getNames()).concat(" fue eliminada exitosamente."));
+                    RESPONSE.setStatus(HttpStatus.OK);
                 }
-                assert acc != null;
-                accountRepository.delete(acc);
-                RESPONSE.setBody("La cuenta de: ".concat(acc.getNames()).concat(" fue eliminada exitosamente."));
-                RESPONSE.setStatus(HttpStatus.OK);
                 break;
             default:
                 RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: X-option)."));
@@ -70,8 +75,5 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    private boolean validateTokens(UUID clientId, UUID clientSecret) {
-        Key key = keyRepository.findByOAuth_ClientIdAndOAuth_ClientSecret(clientId, clientSecret);
-        return key != null;
-    }
+
 }

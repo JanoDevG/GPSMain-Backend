@@ -23,4 +23,12 @@ public class Activity {
     @Setter
     private String description;
 
+    public Activity(LocalDateTime timestamp, String activityTitle, String description) {
+        this.timestamp = timestamp;
+        this.activityTitle = activityTitle;
+        this.description = description;
+    }
+
+    public Activity() {
+    }
 }

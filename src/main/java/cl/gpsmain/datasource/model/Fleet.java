@@ -1,5 +1,6 @@
 package cl.gpsmain.datasource.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,12 +15,14 @@ public class Fleet {
 
     @MongoId
     @JsonProperty("_id")
-    private ObjectId id;
+    @Getter
+    @Setter
+    private String id;
 
     @JsonProperty("gpsAssigned")
     @Getter
     @Setter
-    private ObjectId gpsAssigned;
+    private String gpsAssigned;
 
     @JsonProperty("carName")
     @Getter
