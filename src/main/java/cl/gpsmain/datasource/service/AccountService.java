@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -31,10 +32,10 @@ public class AccountService {
 
     private static final Response RESPONSE = new Response();
 
-    public ResponseEntity<Response> accountService(Account account, String clientId, String clientSecret, String option, String mail) {
+    public ResponseEntity<Response> accountService(Account account, UUID clientSecret, String option, String mail) {
         Account accountApplicant = accountRepository.findByMail(mail);
-        Account acc = accountRepository.findByMail(mail);
-        validations(clientId, clientSecret, accountApplicant, mail);
+        Account acc = accountRepository.findByMail(account.getMail());
+        validations(accountApplicant.getBusinessId(), clientSecret, accountApplicant, mail);
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         switch (option) {
@@ -43,9 +44,11 @@ public class AccountService {
                     RESPONSE.setBody("La cuenta ya existe, se debe actualizar si se requiere modificar.");
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
+                    // completar credenciales para cuenta nueva
                     account.setBusinessId(accountApplicant.getBusinessId());
                     account.setBusinessName(accountApplicant.getBusinessName());
                     account.getActivity().add(new Activity(LocalDateTime.now(), "Creación de cuenta", "Cuenta nueva creada bajo el perfil de: ".concat(account.getProfile())));
+                    //TODO se cae en el log de actividad
                     accountRepository.insert(account);
                     activityService.logActivity(accountApplicant, "Creación de cuenta nueva",
                             "Se crea cuenta nueva para: "
@@ -89,10 +92,10 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    private void validations(String clientId, String clientSecret, Account account, String mail) {
+    private void validations(UUID clientId, UUID clientSecret, Account account, String mail) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
-        if (validationService.validateClientSecret(clientSecret, clientId)) { // Se debe autorizar OAuth2.0
+        if (validationService.validateClientSecret(clientId, clientSecret)) { // Se debe autorizar OAuth2.0
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return;

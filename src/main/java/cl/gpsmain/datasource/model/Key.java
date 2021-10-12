@@ -15,21 +15,15 @@ public class Key {
     @Setter
     private Business business;
 
-    @JsonProperty("business")
-    @Getter
-    @Setter
-    private User user;
-
     @JsonProperty("oauth")
     @Getter
     @Setter
-    private OAuth oAuth;
+    private OAuth auth;
 
-    public Key(Business business, User user, OAuth oAuth) {
-        this.business = business;
-        this.user = user;
-        this.oAuth = oAuth;
-    }
+    @JsonProperty("user")
+    @Getter
+    @Setter
+    private User user;
 
     public static class Business {
 
@@ -43,10 +37,6 @@ public class Key {
         @Setter
         private UUID id;
 
-        public Business(String name, UUID id) {
-            this.name = name;
-            this.id = id;
-        }
     }
 
     public static class User {
@@ -71,30 +61,15 @@ public class Key {
         @Setter
         private UUID manager;
 
-        public User(UUID enterpriseAdmin, UUID supervisor, UUID backoffice, UUID manager) {
-            this.enterpriseAdmin = enterpriseAdmin;
-            this.supervisor = supervisor;
-            this.backoffice = backoffice;
-            this.manager = manager;
-        }
     }
 
     public static class OAuth {
-
-        @JsonProperty("clientId")
-        @Getter
-        @Setter
-        private UUID clientId;
 
         @JsonProperty("clientSecret")
         @Getter
         @Setter
         private UUID clientSecret;
 
-        public OAuth(UUID clientId, UUID clientSecret) {
-            this.clientId = clientId;
-            this.clientSecret = clientSecret;
-        }
     }
 }
 

@@ -11,18 +11,22 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController("EnterpriseController")
 @RequestMapping(value = "/api/admin/enterprise")
 public class EnterpriseController {
 
     @Autowired
     private EnterpriseService enterpriseService;
-
+    /*
     public ResponseEntity<Response> enterpriseController(@RequestHeader("X-ClientSecret") String clientSecret,
-                                                         @RequestHeader("X-ClientId") String clientId,
-                                                         @RequestHeader("X-option") String option,
+                                                         @RequestHeader("X-ClientId") UUID clientId,
+                                                         @RequestHeader("X-option") UUID option,
                                                          @RequestHeader("X-enterpriseName") String enterpriseName) {
         return enterpriseService.enterpriseService(option, clientId, clientSecret, enterpriseName);
 
     }
+
+     */
 }

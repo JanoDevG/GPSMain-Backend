@@ -26,7 +26,7 @@ public class EnterpriseService {
 
     private static final Response RESPONSE = new Response();
 
-    public ResponseEntity<Response> enterpriseService(String option, String clientId, String clientSecret, String enterpriseName) {
+    public ResponseEntity<Response> enterpriseService(String option, UUID clientId, UUID clientSecret, String enterpriseName) {
         if (validationService.validateClientSecret(clientSecret, clientId)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
@@ -39,12 +39,17 @@ public class EnterpriseService {
                     RESPONSE.setBody("La empresa ya se encuentra registrada. No se puede volver a crear una con el mismo nombre de: ".concat(enterpriseName));
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
-                    Key keyEnterpriseNew = new Key(
+                    Key keyEnterpriseNew = new Key();
+                    /*
                             new Key.Business(enterpriseName, UUID.randomUUID()),
-                            new Key.User(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
-                            new Key.OAuth(UUID.randomUUID(), UUID.randomUUID()));
+                            new Key.User(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
+                            new Key.OAuth(UUID.randomUUID()));
+
+                     */
+
+
                     keyRepository.insert(keyEnterpriseNew);
-                    RESPONSE.setBody("La empresa: ".concat(enterpriseName).concat(" se a creado exitosamente junto a sus credenciales. clientSecret: ").concat(keyEnterpriseNew.getOAuth().getClientSecret().toString()));
+                    RESPONSE.setBody("La empresa: ".concat(enterpriseName).concat(" se a creado exitosamente junto a sus credenciales. clientSecret: ").concat(keyEnterpriseNew.getBusiness().getId().toString()));
                     RESPONSE.setStatus(HttpStatus.CREATED);
                 }
                 break;
