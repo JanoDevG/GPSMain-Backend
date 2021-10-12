@@ -30,15 +30,10 @@ public class Account {
     @Setter
     private UUID businessId;
 
-    @JsonProperty("clientId")
-    @Getter
-    @Setter
-    private UUID clientId;
-
     @JsonProperty("profile")
     @Getter
     @Setter
-    private Profile profile;
+    private String profile;
 
     @JsonProperty("activity")
     @Getter
@@ -70,18 +65,5 @@ public class Account {
     @Setter
     private String password;
 
-    private static class Profile {
-
-        @JsonProperty("profileName")
-        @Getter
-        @Setter
-        private String profileName;
-
-        @JsonProperty("permission")
-        @Getter
-        @Setter
-        private String permission;
-
-    }
 }
 
