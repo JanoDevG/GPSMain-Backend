@@ -1,4 +1,4 @@
-package cl.gpsmain.datasource.controller.account;
+package cl.gpsmain.datasource.controller.supervisor;
 
 import cl.gpsmain.datasource.model.Account;
 import cl.gpsmain.datasource.model.Response;

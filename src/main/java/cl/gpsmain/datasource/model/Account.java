@@ -1,12 +1,9 @@
 package cl.gpsmain.datasource.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +11,6 @@ import java.util.UUID;
 
 @Document(collection = "account")
 public class Account {
-
-    @MongoId
-    @JsonProperty("_id")
-    @Getter
-    @Setter
-    private String id;
 
     @JsonProperty("businessName")
     @Getter

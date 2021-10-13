@@ -37,9 +37,9 @@ public class AccountService {
     private static final Response RESPONSE = new Response();
 
     public ResponseEntity<Response> accountService(Account account, UUID clientSecret, String option, String mail) {
-        Account accountApplicant = accountRepository.findFirstByMail(mail);
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
         Account acc = accountRepository.findFirstByMail(account.getMail());
-        validations(accountApplicant.getBusinessId(), clientSecret, accountApplicant, mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, mail);
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         switch (option) {
@@ -49,12 +49,11 @@ public class AccountService {
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
                     // completar credenciales para cuenta nueva
-                    account.setBusinessId(accountApplicant.getBusinessId());
-                    account.setBusinessName(accountApplicant.getBusinessName());
+                    account.setBusinessId(accountSupervisor.getBusinessId());
+                    account.setBusinessName(accountSupervisor.getBusinessName());
                     account.getActivity().add(new Activity(LocalDateTime.now(), "Creación de cuenta", "Cuenta nueva creada bajo el perfil de: ".concat(account.getProfile())));
-                    //TODO se cae en el log de actividad
                     accountRepository.insert(account);
-                    activityService.logActivity(accountApplicant, "Creación de cuenta nueva",
+                    activityService.logActivity(accountSupervisor, "Creación de cuenta nueva",
                             "Se crea cuenta nueva para: "
                                     .concat(account.getNames())
                                     .concat(" con el perfil de: ")
@@ -69,7 +68,7 @@ public class AccountService {
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
                     updateDocumentMongoDB.updateDocument(account);
-                    activityService.logActivity(accountApplicant, "Actualización de cuenta",
+                    activityService.logActivity(accountSupervisor, "Actualización de cuenta",
                             "Se actualiza cuenta para: ".concat(account.getNames()));
                     RESPONSE.setBody("Cuenta actualizada exitosamente.");
                     RESPONSE.setStatus(HttpStatus.OK);
@@ -81,7 +80,7 @@ public class AccountService {
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
                     accountRepository.delete(acc);
-                    activityService.logActivity(accountApplicant, "Eliminación de cuenta",
+                    activityService.logActivity(accountSupervisor, "Eliminación de cuenta",
                             "Se elimina la cuenta de: ".concat(account.getNames()));
                     RESPONSE.setBody("Cuenta actualizada exitosamente.");
                     RESPONSE.setBody("La cuenta de: ".concat(acc.getNames()).concat(" fue eliminada exitosamente."));
@@ -96,19 +95,25 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    private void validations(UUID clientId, UUID clientSecret, Account account, String mail) {
+    private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor, String mailAccountFromUpdating) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
-        if (validationService.validateClientSecret(clientId, clientSecret)) { // Se debe autorizar OAuth2.0
+        // Se debe autorizar OAuth2.0
+        if (validationService.validateClientSecret(clientId, clientSecret)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return;
         }
-        if (account == null) { // La cuenta X debe existir para proceder con cualquier operción
+        // La cuenta X debe existir para proceder con cualquier operción
+        if (accountSupervisor == null) {
             RESPONSE.setBody("El Mail informado no se encuentra registrado, no se permiten operaciones con cuentas no registradas previamente.");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return;
         }
-        //TODO supervisor solo puede actualziar y eliminar cuentas de su empresa (crear asume el código que es para su empresa)
+        // Solo se puede eliminar o actualziar cuentas de la misma organziación
+        if (!accountSupervisor.getBusinessId().equals(accountRepository.findFirstByMail(mailAccountFromUpdating).getBusinessId())) {
+            RESPONSE.setBody("La cuenta que se desea actualziar no es parte de la organziación.");
+            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+        }
     }
 }
