@@ -20,9 +20,9 @@ public class AccountController {
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.DELETE, RequestMethod.POST, RequestMethod.PUT},
             path = {"/create-account", "/update-account", "delete-account"})
-    public ResponseEntity<Response> accountController(@RequestHeader("X-option") String option,
-                                                      @RequestHeader("X-clientSecret") UUID clientSecret,
-                                                      @RequestHeader("X-mail") String mail,
+    public ResponseEntity<Response> accountController(@RequestHeader("Xoption") String option,
+                                                      @RequestHeader("XclientSecret") UUID clientSecret,
+                                                      @RequestHeader("Xmail") String mail,
                                                       @RequestBody(required = false) Account account) {
         return accountService.accountService(account, clientSecret, option, mail);
 
