@@ -6,6 +6,8 @@ import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
+import cl.gpsmain.datasource.service.repository.FleetRepository;
+import cl.gpsmain.datasource.service.repository.GPSRepository;
 import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -27,6 +28,12 @@ public class EnterpriseService {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private GPSRepository gpsRepository;
+
+    @Autowired
+    private FleetRepository fleetRepository;
 
     private static final Response RESPONSE = new Response();
 
@@ -72,7 +79,18 @@ public class EnterpriseService {
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
                     keyRepository.delete(key);
-                    RESPONSE.setBody("La empresa: ".concat(enterpriseName).concat(" se a eliminado correctamente."));
+                    activityService.logActivity(accountAdmin,"Eliminación empresa: ".concat(key.getBusiness().getName()),
+                            "Se elimina empresa junto a todas sus credenciales");
+                    accountRepository.deleteAllByBusinessId(key.getBusiness().getBusinessId());
+                    activityService.logActivity(accountAdmin, "eliminación cuentas empresa: ".concat(key.getBusiness().getName()),
+                            "Se eliminan todas las cuentas asociadas a la empresa: ".concat(key.getBusiness().getName()));
+                    gpsRepository.deleteAllByClientId(key.getBusiness().getBusinessId());
+                    activityService.logActivity(accountAdmin, "Eliminación dispositivos GPS",
+                            "Se eliminan todos los GPS asociados a la empresa: ".concat(key.getBusiness().getName()));
+                    fleetRepository.deleteAllByBusinessId(key.getBusiness().getBusinessId());
+                    activityService.logActivity(accountAdmin, "Eliminación de flotas",
+                            "Se eliminan todas las flotas asociadas a la empresa: ".concat(key.getBusiness().getName()));
+                    RESPONSE.setBody("La empresa: ".concat(enterpriseName).concat(" se a eliminado correctamente junto a todas sus cuentas, GPS y flotas registradas ."));
                     RESPONSE.setStatus(HttpStatus.OK);
                 }
                 break;
