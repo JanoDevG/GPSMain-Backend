@@ -44,7 +44,6 @@ public class EnterpriseService {
                     keyEnterpriseNew.setBusiness(new Key.Business());
                     keyEnterpriseNew.getBusiness().setBusinessId(UUID.randomUUID());
                     keyEnterpriseNew.getBusiness().setName(enterpriseName);
-
                     keyRepository.insert(keyEnterpriseNew);
                     activityService.logActivity(accountRepository.findFirstByMail(mail),"Creación empresa nueva",
                             "Creación de nueva empresa: ".concat(enterpriseName).concat(" | clientSecret: ".concat(keyEnterpriseNew.getOauth().getClientSecret().toString())));

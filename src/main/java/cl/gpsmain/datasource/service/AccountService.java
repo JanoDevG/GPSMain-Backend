@@ -1,5 +1,6 @@
 package cl.gpsmain.datasource.service;
 
+import cl.gpsmain.datasource.config.UpdateDocumentMongoDB;
 import cl.gpsmain.datasource.model.Account;
 import cl.gpsmain.datasource.model.Activity;
 import cl.gpsmain.datasource.model.Response;
@@ -20,6 +21,9 @@ public class AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private UpdateDocumentMongoDB updateDocumentMongoDB;
 
     @Autowired
     private KeyRepository keyRepository;
@@ -64,7 +68,7 @@ public class AccountService {
                     RESPONSE.setBody("La cuenta no existe. No hay datos que actualizar.");
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
-                    accountRepository.save(account);
+                    updateDocumentMongoDB.updateDocument(account);
                     activityService.logActivity(accountApplicant, "Actualización de cuenta",
                             "Se actualiza cuenta para: ".concat(account.getNames()));
                     RESPONSE.setBody("Cuenta actualizada exitosamente.");
