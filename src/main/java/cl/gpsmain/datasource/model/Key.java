@@ -18,7 +18,7 @@ public class Key {
     @JsonProperty("oauth")
     @Getter
     @Setter
-    private OAuth auth;
+    private OAuth oauth;
 
     @JsonProperty("user")
     @Getter
@@ -35,7 +35,7 @@ public class Key {
         @JsonProperty("id")
         @Getter
         @Setter
-        private UUID id;
+        private UUID businessId;
 
     }
 

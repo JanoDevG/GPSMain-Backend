@@ -3,7 +3,7 @@ package cl.gpsmain.datasource.service.admin;
 import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
-import cl.gpsmain.datasource.service.core.ValidationService;
+import cl.gpsmain.datasource.service.repository.AccountRepository;
 import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,19 +19,14 @@ public class EnterpriseService {
     private KeyRepository keyRepository;
 
     @Autowired
-    private ValidationService validationService;
+    private AccountRepository accountRepository;
 
     @Autowired
     private ActivityService activityService;
 
     private static final Response RESPONSE = new Response();
 
-    public ResponseEntity<Response> enterpriseService(String option, UUID clientId, UUID clientSecret, String enterpriseName) {
-        if (validationService.validateClientSecret(clientSecret, clientId)) {
-            RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
-            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
-            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
-        }
+    public ResponseEntity<Response> enterpriseService(String option, String enterpriseName, String mail) {
         Key key = keyRepository.findByBusiness_Name(enterpriseName);
         switch (option) {
             case "CREATE":
@@ -40,16 +35,20 @@ public class EnterpriseService {
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
                     Key keyEnterpriseNew = new Key();
-                    /*
-                            new Key.Business(enterpriseName, UUID.randomUUID()),
-                            new Key.User(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
-                            new Key.OAuth(UUID.randomUUID()));
-
-                     */
-
+                    keyEnterpriseNew.setUser(new Key.User());
+                    keyEnterpriseNew.getUser().setBackoffice(UUID.randomUUID());
+                    keyEnterpriseNew.getUser().setSupervisor(UUID.randomUUID());
+                    keyEnterpriseNew.getUser().setManager(UUID.randomUUID());
+                    keyEnterpriseNew.setOauth(new Key.OAuth());
+                    keyEnterpriseNew.getOauth().setClientSecret(UUID.randomUUID());
+                    keyEnterpriseNew.setBusiness(new Key.Business());
+                    keyEnterpriseNew.getBusiness().setBusinessId(UUID.randomUUID());
+                    keyEnterpriseNew.getBusiness().setName(enterpriseName);
 
                     keyRepository.insert(keyEnterpriseNew);
-                    RESPONSE.setBody("La empresa: ".concat(enterpriseName).concat(" se a creado exitosamente junto a sus credenciales. clientSecret: ").concat(keyEnterpriseNew.getBusiness().getId().toString()));
+                    activityService.logActivity(accountRepository.findFirstByMail(mail),"Creación empresa nueva",
+                            "Creación de nueva empresa: ".concat(enterpriseName).concat(" | clientSecret: ".concat(keyEnterpriseNew.getOauth().getClientSecret().toString())));
+                    RESPONSE.setBody("La empresa: ".concat(enterpriseName).concat(" se a creado exitosamente junto a sus credenciales. clientSecret: ").concat(keyEnterpriseNew.getBusiness().getBusinessId().toString()));
                     RESPONSE.setStatus(HttpStatus.CREATED);
                 }
                 break;

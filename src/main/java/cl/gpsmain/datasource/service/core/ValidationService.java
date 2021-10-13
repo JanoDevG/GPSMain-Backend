@@ -17,7 +17,7 @@ public class ValidationService {
 
     public boolean validateClientSecret(UUID id, UUID clientSecret) {
         //TODO implementar el find retorna siempre null (false)
-        Key key = keyRepository.findByBusiness_IdAndAuth_ClientSecret(id, clientSecret);
+        Key key = keyRepository.findByBusiness_BusinessIdAndOauth_ClientSecret(id, clientSecret);
         return false;
     }
 }

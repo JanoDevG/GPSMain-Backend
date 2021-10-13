@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface KeyRepository extends MongoRepository<Key, String> {
 
-    Key findByBusiness_IdAndAuth_ClientSecret(UUID id, UUID ClientSecret);
+    Key findByBusiness_BusinessIdAndOauth_ClientSecret(UUID id, UUID ClientSecret);
 
     Key findByBusiness_Name(String businessName);
 

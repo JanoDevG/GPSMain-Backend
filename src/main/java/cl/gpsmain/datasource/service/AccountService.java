@@ -33,8 +33,8 @@ public class AccountService {
     private static final Response RESPONSE = new Response();
 
     public ResponseEntity<Response> accountService(Account account, UUID clientSecret, String option, String mail) {
-        Account accountApplicant = accountRepository.findByMail(mail);
-        Account acc = accountRepository.findByMail(account.getMail());
+        Account accountApplicant = accountRepository.findFirstByMail(mail);
+        Account acc = accountRepository.findFirstByMail(account.getMail());
         validations(accountApplicant.getBusinessId(), clientSecret, accountApplicant, mail);
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
