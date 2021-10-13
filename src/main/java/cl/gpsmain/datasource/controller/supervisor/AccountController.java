@@ -4,7 +4,6 @@ import cl.gpsmain.datasource.model.Account;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

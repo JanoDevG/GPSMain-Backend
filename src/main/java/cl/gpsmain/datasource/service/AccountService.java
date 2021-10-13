@@ -7,7 +7,6 @@ import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
-import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +23,6 @@ public class AccountService {
 
     @Autowired
     private UpdateDocumentMongoDB updateDocumentMongoDB;
-
-    @Autowired
-    private KeyRepository keyRepository;
 
     @Autowired
     private ActivityService activityService;
