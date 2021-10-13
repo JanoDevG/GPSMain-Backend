@@ -39,7 +39,7 @@ public class AccountService {
     public ResponseEntity<Response> accountService(Account account, UUID clientSecret, String option, String mail) {
         Account accountSupervisor = accountRepository.findFirstByMail(mail);
         Account acc = accountRepository.findFirstByMail(account.getMail());
-        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, account.getMail());
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, acc, option);
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         switch (option) {
@@ -67,6 +67,10 @@ public class AccountService {
                     RESPONSE.setBody("La cuenta no existe. No hay datos que actualizar.");
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
+                    account.setActivity(acc.getActivity());
+                    account.setBusinessId(acc.getBusinessId());
+                    account.setBusinessName(acc.getBusinessName());
+                    account.setGPSAssigned(acc.getGPSAssigned());
                     updateDocumentMongoDB.updateDocument(account);
                     activityService.logActivity(accountSupervisor, "Actualización de cuenta",
                             "Se actualiza cuenta para: ".concat(account.getNames()));
@@ -79,9 +83,9 @@ public class AccountService {
                     RESPONSE.setBody("La cuenta no existe. No hay datos que eliminar.");
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
-                    accountRepository.delete(acc);
+                    accountRepository.deleteByMailAndBusinessId(acc.getMail(), acc.getBusinessId());
                     activityService.logActivity(accountSupervisor, "Eliminación de cuenta",
-                            "Se elimina la cuenta de: ".concat(account.getNames()));
+                            "Se elimina la cuenta de: ".concat(acc.getNames()));
                     RESPONSE.setBody("Cuenta actualizada exitosamente.");
                     RESPONSE.setBody("La cuenta de: ".concat(acc.getNames()).concat(" fue eliminada exitosamente."));
                     RESPONSE.setStatus(HttpStatus.OK);
@@ -95,7 +99,7 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor, String mailAccountFromUpdating) {
+    private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor, Account account, String option) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
         // Se debe autorizar OAuth2.0
@@ -111,9 +115,11 @@ public class AccountService {
             return;
         }
         // Solo se puede eliminar o actualziar cuentas de la misma organziación
-        if (!accountSupervisor.getBusinessId().equals(accountRepository.findFirstByMail(mailAccountFromUpdating).getBusinessId())) {
-            RESPONSE.setBody("La cuenta que se desea actualziar no es parte de la organziación.");
-            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+        if (option.equals("UPDATE") || option.equals("DELETE") && account != null) {
+            if (!accountSupervisor.getBusinessId().equals(account.getBusinessId())) {
+                RESPONSE.setBody("La cuenta que se desea actualziar no es parte de la organziación.");
+                RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+            }
         }
     }
 }

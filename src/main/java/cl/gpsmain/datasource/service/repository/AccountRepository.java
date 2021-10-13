@@ -11,4 +11,6 @@ public interface AccountRepository extends MongoRepository<Account, String> {
 
     void deleteAllByBusinessId(UUID businessId);
 
+    void deleteByMailAndBusinessId(String mail, UUID businessId);
+
 }
