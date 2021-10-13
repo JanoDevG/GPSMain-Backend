@@ -17,7 +17,6 @@ public class ActivityService {
     public void logActivity(Account account, String activity, String description) {
         account.getActivity().add(new Activity(LocalDateTime.now(), activity, description));
         updateDocumentMongoDB.updateDocument(account);
-
     }
 
 }

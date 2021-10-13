@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +37,12 @@ public class Account {
     private String profile;
 
     @JsonProperty("activity")
-    @Getter
+    public List<Activity> getActivity(){
+        if (this.activity == null){
+            this.activity = new ArrayList<Activity>();
+        }
+        return this.activity;
+    }
     @Setter
     private List<Activity> activity;
 

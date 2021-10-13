@@ -8,4 +8,5 @@ import java.util.List;
 public interface AccountRepository extends MongoRepository<Account, String> {
 
     Account findFirstByMail(String mail);
+
 }
