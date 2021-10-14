@@ -14,7 +14,8 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    @GetMapping({"/admin", "/backoffce", "/supervisor", "/manager"})
+    @GetMapping()
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
     public ResponseEntity<Response> loginAdmin(@RequestHeader(value = "Xmail") String mail,
                                                @RequestHeader(value = "Xpassword") String password){
         return loginService.loginAccount(mail, password);
