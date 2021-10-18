@@ -13,4 +13,5 @@ public interface GPSRepository extends MongoRepository<GPS, String> {
     void deleteById(String id);
 
     List<GPS> findAllByClientId(UUID clientId);
+
 }

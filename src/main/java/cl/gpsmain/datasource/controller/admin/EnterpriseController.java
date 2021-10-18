@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController("EnterpriseController")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 @RequestMapping(value = "/api/admin/enterprise")
 public class EnterpriseController {
 
@@ -21,5 +22,15 @@ public class EnterpriseController {
                                                          @RequestBody(required = false) Account account) {
         return enterpriseService.enterpriseService(option, enterpriseName, mail, account);
 
+    }
+
+    @GetMapping("/count-business")
+    public int countBusiness(){
+        return enterpriseService.countBusiness();
+    }
+
+    @GetMapping("/count-users")
+    public int countUsers(){
+        return enterpriseService.countUsers();
     }
 }

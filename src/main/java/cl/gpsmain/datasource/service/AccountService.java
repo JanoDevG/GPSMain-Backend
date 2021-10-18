@@ -95,10 +95,35 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> returnAccounts(UUID clientSecret, String mail) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, null, "");
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(accountRepository.findAllByBusinessId(accountSupervisor.getBusinessId()));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> returnAccount(UUID clientSecret, String mail, String mailAccount) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, null, "");
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(accountRepository.findFirstByBusinessIdAndMail(accountSupervisor.getBusinessId(), mailAccount));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor, Account account, String option) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
         // Se debe autorizar OAuth2.0
+        if (!accountSupervisor.getProfile().equals("supervisor")) {
+            RESPONSE.setBody("Solo se permite acceder a información de las cuentas desde una cuenta de supervisor");
+            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+            return;
+        }
         if (validationService.validateClientSecret(clientId, clientSecret)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
@@ -118,4 +143,5 @@ public class AccountService {
             }
         }
     }
+
 }

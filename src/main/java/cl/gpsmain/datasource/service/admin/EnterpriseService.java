@@ -101,4 +101,12 @@ public class EnterpriseService {
         }
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
+
+    public int countBusiness(){
+        return keyRepository.findAll().size();
+    }
+
+    public int countUsers(){
+        return accountRepository.findAll().size();
+    }
 }

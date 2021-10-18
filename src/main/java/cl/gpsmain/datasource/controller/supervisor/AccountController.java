@@ -27,4 +27,17 @@ public class AccountController {
 
     }
 
+    @GetMapping(path = "/get-all-accounts")
+    public ResponseEntity<Response> returnAccounts(@RequestHeader("Xmail") String mail,
+                                                   @RequestHeader("XclientSecret") UUID clientSecret) {
+        return accountService.returnAccounts(clientSecret, mail);
+    }
+
+    @GetMapping(path = "/get-account")
+    public ResponseEntity<Response> returnAccount(@RequestHeader("Xmail") String mail,
+                                                   @RequestHeader("XclientSecret") UUID clientSecret,
+                                                  @RequestHeader("XmailAccount") String mailAccount) {
+        return accountService.returnAccount(clientSecret, mail, mailAccount);
+    }
+
 }
