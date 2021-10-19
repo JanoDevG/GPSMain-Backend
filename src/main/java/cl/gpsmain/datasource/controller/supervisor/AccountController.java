@@ -22,8 +22,9 @@ public class AccountController {
     public ResponseEntity<Response> accountController(@RequestHeader("Xoption") String option,
                                                       @RequestHeader("XclientSecret") UUID clientSecret,
                                                       @RequestHeader("Xmail") String mail,
-                                                      @RequestBody(required = false) Account account) {
-        return accountService.accountService(account, clientSecret, option, mail);
+                                                      @RequestBody(required = false) Account account,
+                                                      @RequestParam(value = "mail", required = false) String mailDeleteAccount) {
+        return accountService.accountService(account, clientSecret, option, mail, mailDeleteAccount);
 
     }
 
