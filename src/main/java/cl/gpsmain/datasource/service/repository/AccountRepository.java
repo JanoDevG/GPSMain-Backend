@@ -14,7 +14,7 @@ public interface AccountRepository extends MongoRepository<Account, String> {
 
     void deleteByMailAndBusinessId(String mail, UUID businessId);
 
-    List<Account> findAllByBusinessId(UUID businessId);
+    List<Account> findAllByBusinessIdAndProfile(UUID businessId, String profile);
 
     Account findFirstByBusinessIdAndMail(UUID businessId, String mail);
 

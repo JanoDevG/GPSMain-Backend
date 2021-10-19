@@ -5,6 +5,7 @@ import cl.gpsmain.datasource.model.GPS;
 import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
+import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
 import cl.gpsmain.datasource.service.repository.GPSRepository;
 import cl.gpsmain.datasource.service.repository.KeyRepository;
@@ -29,10 +30,16 @@ public class GPSService {
     @Autowired
     private GPSRepository gpsRepository;
 
+    @Autowired
+    private ValidationService validationService;
+
     private static final Response RESPONSE = new Response();
 
-    public ResponseEntity<Response> gpsService(UUID clientSecret, String mail, String option, GPS gps) {
+    public ResponseEntity<Response> gpsService(UUID clientSecret, String mail, String option, String gpsId) {
         Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor);
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         switch (option) {
             case "CREATE":
                 GPS newGps = new GPS();
@@ -50,10 +57,10 @@ public class GPSService {
                 RESPONSE.setBody(GPSs);
                 break;
             case "DELETE":
-                gpsRepository.deleteById(gps.getId());
-                activityService.logActivity(accountSupervisor, "Elimianción GPS", "Se elimina GPS con ID: ".concat(gps.getId()));
+                gpsRepository.deleteById(gpsId);
+                activityService.logActivity(accountSupervisor, "Elimianción GPS", "Se elimina GPS con ID: ".concat(gpsId));
                 RESPONSE.setStatus(HttpStatus.OK);
-                RESPONSE.setBody("GPS con ID: ".concat(gps.getId()).concat(" eliminado exitosamente."));
+                RESPONSE.setBody("GPS con ID: ".concat(gpsId).concat(" eliminado exitosamente."));
                 break;
             default:
                 RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: X-option)."));
@@ -61,5 +68,37 @@ public class GPSService {
                 break;
         }
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> getAllGPS(UUID clientSecret, String mail) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor);
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(gpsRepository.findAllByClientId(accountSupervisor.getBusinessId()));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor) {
+        RESPONSE.setBody(null);
+        RESPONSE.setStatus(HttpStatus.OK);
+        // Se debe autorizar OAuth2.0
+        if (!accountSupervisor.getProfile().equals("supervisor")) {
+            RESPONSE.setBody("Solo se permite acceder a información de los GPS desde una cuenta de supervisor");
+            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+            return;
+        }
+        if (validationService.validateClientSecret(clientId, clientSecret)) {
+            RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
+            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+            return;
+        }
+        // La cuenta X debe existir para proceder con cualquier operción
+        if (accountSupervisor == null) {
+            RESPONSE.setBody("El Mail informado no se encuentra registrado, no se permiten operaciones con cuentas no registradas previamente.");
+            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+
+        }
     }
 }

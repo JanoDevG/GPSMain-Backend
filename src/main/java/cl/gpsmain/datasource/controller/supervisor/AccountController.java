@@ -29,8 +29,9 @@ public class AccountController {
 
     @GetMapping(path = "/get-all-accounts")
     public ResponseEntity<Response> returnAccounts(@RequestHeader("Xmail") String mail,
-                                                   @RequestHeader("XclientSecret") UUID clientSecret) {
-        return accountService.returnAccounts(clientSecret, mail);
+                                                   @RequestHeader("XclientSecret") UUID clientSecret,
+                                                   @RequestHeader("Xprofile") String profile) {
+        return accountService.returnAccounts(clientSecret, mail, profile);
     }
 
     @GetMapping(path = "/get-account")

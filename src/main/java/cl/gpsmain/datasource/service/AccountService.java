@@ -55,7 +55,7 @@ public class AccountService {
                                     .concat(" con el perfil de: ")
                                     .concat(account.getProfile()));
                     RESPONSE.setBody("La cuenta fue creada exitosamente.");
-                    RESPONSE.setStatus(HttpStatus.OK);
+                    RESPONSE.setStatus(HttpStatus.CREATED);
                 }
                 break;
             case "UPDATE": // update account if exist
@@ -95,13 +95,13 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    public ResponseEntity<Response> returnAccounts(UUID clientSecret, String mail) {
+    public ResponseEntity<Response> returnAccounts(UUID clientSecret, String mail, String profile) {
         Account accountSupervisor = accountRepository.findFirstByMail(mail);
         validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, null, "");
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         RESPONSE.setStatus(HttpStatus.OK);
-        RESPONSE.setBody(accountRepository.findAllByBusinessId(accountSupervisor.getBusinessId()));
+        RESPONSE.setBody(accountRepository.findAllByBusinessIdAndProfile(accountSupervisor.getBusinessId(), profile));
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
