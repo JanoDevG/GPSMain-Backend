@@ -72,7 +72,7 @@ public class AccountService {
                     account.setBusinessId(acc.getBusinessId());
                     account.setBusinessName(acc.getBusinessName());
                     account.setGPSAssigned(acc.getGPSAssigned());
-                    updateDocumentMongoDB.updateDocument(account);
+                    updateDocumentMongoDB.updateAccount(account);
                     activityService.logActivity(accountSupervisor, "Actualización de cuenta",
                             "Se actualiza cuenta para: ".concat(account.getNames()));
                     RESPONSE.setBody("Cuenta actualizada exitosamente.");

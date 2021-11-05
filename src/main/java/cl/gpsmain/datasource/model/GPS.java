@@ -13,7 +13,6 @@ import java.util.UUID;
 @Document(collection = "gps")
 public class GPS {
 
-    @MongoId
     @JsonProperty("_id")
     @Getter
     @Setter
@@ -34,8 +33,8 @@ public class GPS {
     @Setter
     private boolean isActive;
 
-    @JsonProperty("installed")
+    @JsonProperty("isInstalled")
     @Getter
     @Setter
-    private boolean installed;
+    private boolean isInstalled;
 }

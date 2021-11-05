@@ -2,7 +2,6 @@ package cl.gpsmain.datasource.service;
 
 import cl.gpsmain.datasource.model.Account;
 import cl.gpsmain.datasource.model.GPS;
-import cl.gpsmain.datasource.model.Key;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.core.ValidationService;

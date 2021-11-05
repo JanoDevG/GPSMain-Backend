@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface GPSRepository extends MongoRepository<GPS, String> {
@@ -13,9 +14,12 @@ public interface GPSRepository extends MongoRepository<GPS, String> {
 
     void deleteByIdAndClientId(ObjectId id, UUID clientId);
 
-    Object deleteById(ObjectId id);
+    void deleteById(ObjectId id);
 
     List<GPS> findAllByClientId(UUID clientId);
 
+    List<GPS> findAllByIsInstalledAndClientId(boolean isInstalled, UUID clientIs);
+
+    GPS findByIdAndClientId(ObjectId id, UUID clientId);
 
 }

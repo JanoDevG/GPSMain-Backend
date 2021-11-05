@@ -23,13 +23,23 @@ public class FleetController {
         return fleetService.getAllFleet(clientSecret, mail);
     }
 
-    @RequestMapping(method = {RequestMethod.DELETE, RequestMethod.POST, RequestMethod.PUT},
+    @RequestMapping(method = {RequestMethod.DELETE, RequestMethod.POST},
             path = {"create-fleet", "delete-fleet"})
-    public ResponseEntity<Response> gPSService(@RequestHeader("XclientSecret") UUID clientSecret,
-                                               @RequestHeader("Xmail") String mail,
-                                               @RequestHeader("Xoption") String option,
-                                               @RequestHeader(value = "XFleetPatent", required = false) String fleetPatent,
-                                               @RequestBody(required = false) Fleet fleet) {
+    public ResponseEntity<Response> fleetService(@RequestHeader("XclientSecret") UUID clientSecret,
+                                                 @RequestHeader("Xmail") String mail,
+                                                 @RequestHeader("Xoption") String option,
+                                                 @RequestHeader(value = "XFleetPatent", required = false) String fleetPatent,
+                                                 @RequestBody(required = false) Fleet fleet) {
         return fleetService.fleetService(clientSecret, mail, option, fleetPatent, fleet);
     }
+
+    @RequestMapping(method = RequestMethod.POST,
+            path = {"assigned-gps", "remove-gps"})
+    public ResponseEntity<Response> assignedFleet(@RequestHeader("XclientSecret") UUID clientSecret,
+                                                  @RequestHeader("Xmail") String mail,
+                                                  @RequestHeader("Xoption") String option,
+                                                  @RequestHeader(value = "XFleetPatent", required = false) String fleetPatent) {
+        return fleetService.assignedFleet(clientSecret, mail, option, fleetPatent);
+    }
+
 }
