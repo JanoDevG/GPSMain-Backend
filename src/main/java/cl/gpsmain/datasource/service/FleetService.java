@@ -108,31 +108,22 @@ public class FleetService {
                 RESPONSE.setBody("A la flota con patente: ".concat(fleetPatent).concat(" Se le acaba de asignar el GPS con ID: ".concat(fleet.getGpsAssigned())));
                 break;
             case "REMOVE":
-
-
-                /*
-                TODO para mañana
-
-                Falta ver por qué se debe asignar a cada rato antes de remover, o remover hace algo solo que está mal
-                quizás sea por no completar aún el remover y se iba la línea 122 actualizando la flota pero no el GPS y quedaba todo malo
-                ESO
-                
-                 */
-
-
                 fleet = fleetRepository.findByPatent(fleetPatent);
                 GPS gps = gpsRepository.findByIdAndClientId(new ObjectId(fleet.getGpsAssigned()), accountSupervisor.getBusinessId());
-                fleet.setGpsAssigned(null); //TODO guardar id GPS para log activity antes de borrarlo NULL
-                //gps.setInstalled(false);
-                //gps.setActive(false);
+                fleet.setGpsAssigned(null);
+                gps.setInstalled(false);
+                gps.setActive(false);
                 updateDocumentMongoDB.updateFleet(fleet);
-                //updateDocumentMongoDB.updateGPS(gps);
+                updateDocumentMongoDB.updateGPS(gps);
                 activityService.logActivity(accountSupervisor, "Desvinculación GPS a flota", "Se desvincula GPS con ID: "
-                        .concat(fleet.getGpsAssigned()
+                        .concat(gps.getId()
                                 .concat(" de flota con patente: ")
                                 .concat(fleet.getId())));
                 RESPONSE.setStatus(HttpStatus.OK);
-                RESPONSE.setBody("A la flota con patente: ".concat(fleetPatent).concat(" se le ha removido el GPS con ID: ".concat(fleet.getGpsAssigned())));
+                RESPONSE.setBody("A la flota con patente: "
+                        .concat(fleet.getPatent())
+                        .concat(" se le ha removido el GPS con ID: "
+                                .concat(gps.getId())));
                 break;
             default:
                 RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: Xoption)."));
