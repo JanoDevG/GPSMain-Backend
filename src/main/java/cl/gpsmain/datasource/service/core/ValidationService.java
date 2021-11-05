@@ -19,4 +19,5 @@ public class ValidationService {
         Key key = keyRepository.findByBusiness_BusinessIdAndOauth_ClientSecret(id, clientSecret);
         return false;
     }
+
 }

@@ -8,7 +8,6 @@ import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
 import cl.gpsmain.datasource.service.repository.GPSRepository;
-import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
