@@ -1,6 +1,7 @@
 package cl.gpsmain.datasource.config;
 
 import cl.gpsmain.datasource.model.Account;
+import cl.gpsmain.datasource.model.GPS;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,5 +23,4 @@ public class UpdateDocumentMongoDB {
         Update update = Update.fromDocument(doc);
         mongoTemplate.updateFirst(query, update, "account");
     }
-
 }

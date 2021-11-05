@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EnterpriseService {
@@ -79,7 +81,7 @@ public class EnterpriseService {
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
                 } else {
                     keyRepository.delete(key);
-                    activityService.logActivity(accountAdmin,"Eliminación empresa: ".concat(key.getBusiness().getName()),
+                    activityService.logActivity(accountAdmin, "Eliminación empresa: ".concat(key.getBusiness().getName()),
                             "Se elimina empresa junto a todas sus credenciales");
                     accountRepository.deleteAllByBusinessId(key.getBusiness().getBusinessId());
                     activityService.logActivity(accountAdmin, "eliminación cuentas empresa: ".concat(key.getBusiness().getName()),
@@ -102,11 +104,20 @@ public class EnterpriseService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
-    public int countBusiness(){
+    public int countBusiness() {
         return keyRepository.findAll().size();
     }
 
-    public int countUsers(){
+    public int countUsers() {
         return accountRepository.findAll().size();
+    }
+
+    public ResponseEntity<Response> getAllEnterprise() {
+        List<Key> keys = keyRepository.findAll();
+        List<String> enterpriseNames = null;
+        keys.forEach(key -> enterpriseNames.add(key.getBusiness().getName()));
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(enterpriseNames);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 }

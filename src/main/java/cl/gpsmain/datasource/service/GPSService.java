@@ -57,7 +57,7 @@ public class GPSService {
                 RESPONSE.setBody(GPSs);
                 break;
             case "DELETE":
-                gpsRepository.deleteById(gpsId);
+                gpsRepository.deleteById(new ObjectId(gpsId));
                 activityService.logActivity(accountSupervisor, "Elimianción GPS", "Se elimina GPS con ID: ".concat(gpsId));
                 RESPONSE.setStatus(HttpStatus.OK);
                 RESPONSE.setBody("GPS con ID: ".concat(gpsId).concat(" eliminado exitosamente."));

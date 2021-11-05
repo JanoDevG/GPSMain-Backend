@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController("GPSController")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 @RequestMapping(value = "/api/gps")
 public class GPSController {
 
@@ -23,7 +23,7 @@ public class GPSController {
     }
 
     @RequestMapping(method = {RequestMethod.DELETE, RequestMethod.POST, RequestMethod.PUT},
-            path = {"/create-gps", "delete-gps"})
+            path = {"create-gps", "delete-gps"})
     public ResponseEntity<Response> gPSService(@RequestHeader("XclientSecret") UUID clientSecret,
                                                @RequestHeader("Xmail") String mail,
                                                @RequestHeader("Xoption") String option,

@@ -1,6 +1,7 @@
 package cl.gpsmain.datasource.service.repository;
 
 import cl.gpsmain.datasource.model.GPS;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -10,8 +11,11 @@ public interface GPSRepository extends MongoRepository<GPS, String> {
 
     void deleteAllByClientId(UUID enterpriseId);
 
-    void deleteById(String id);
+    void deleteByIdAndClientId(ObjectId id, UUID clientId);
+
+    Object deleteById(ObjectId id);
 
     List<GPS> findAllByClientId(UUID clientId);
+
 
 }

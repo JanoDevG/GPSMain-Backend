@@ -33,4 +33,10 @@ public class EnterpriseController {
     public int countUsers(){
         return enterpriseService.countUsers();
     }
+
+    @GetMapping("/get-all-enterprise")
+    public ResponseEntity<Response> getAllEnterprise(){
+        return enterpriseService.getAllEnterprise();
+    }
+
 }
