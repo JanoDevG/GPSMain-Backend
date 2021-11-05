@@ -11,4 +11,6 @@ public interface FleetRepository extends MongoRepository <Fleet, String> {
     void deleteAllByBusinessId(UUID businessId);
 
     List<Fleet> findAllByBusinessId(UUID businessId);
+
+    void deleteByPatent(String patent);
 }

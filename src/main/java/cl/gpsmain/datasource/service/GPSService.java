@@ -62,7 +62,7 @@ public class GPSService {
                 RESPONSE.setBody("GPS con ID: ".concat(gpsId).concat(" eliminado exitosamente."));
                 break;
             default:
-                RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: X-option)."));
+                RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: Xoption)."));
                 RESPONSE.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
                 break;
         }
