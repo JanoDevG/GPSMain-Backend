@@ -7,7 +7,6 @@ import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
-import cl.gpsmain.datasource.service.repository.KeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +25,6 @@ public class AccountService {
     private UpdateDocumentMongoDB updateDocumentMongoDB;
 
     @Autowired
-    private KeyRepository keyRepository;
-
-    @Autowired
     private ActivityService activityService;
 
     @Autowired
@@ -36,9 +32,14 @@ public class AccountService {
 
     private static final Response RESPONSE = new Response();
 
-    public ResponseEntity<Response> accountService(Account account, UUID clientSecret, String option, String mail) {
+    public ResponseEntity<Response> accountService(Account account, UUID clientSecret, String option, String mail, String mailDeleteAccount) {
         Account accountSupervisor = accountRepository.findFirstByMail(mail);
-        Account acc = accountRepository.findFirstByMail(account.getMail());
+        Account acc;
+        if (mailDeleteAccount != null){
+            acc = accountRepository.findFirstByMail(mailDeleteAccount);
+        }else{
+            acc = accountRepository.findFirstByMail(account.getMail());
+        }
         validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, acc, option);
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
@@ -59,7 +60,7 @@ public class AccountService {
                                     .concat(" con el perfil de: ")
                                     .concat(account.getProfile()));
                     RESPONSE.setBody("La cuenta fue creada exitosamente.");
-                    RESPONSE.setStatus(HttpStatus.OK);
+                    RESPONSE.setStatus(HttpStatus.CREATED);
                 }
                 break;
             case "UPDATE": // update account if exist
@@ -71,7 +72,7 @@ public class AccountService {
                     account.setBusinessId(acc.getBusinessId());
                     account.setBusinessName(acc.getBusinessName());
                     account.setGPSAssigned(acc.getGPSAssigned());
-                    updateDocumentMongoDB.updateDocument(account);
+                    updateDocumentMongoDB.updateAccount(account);
                     activityService.logActivity(accountSupervisor, "Actualización de cuenta",
                             "Se actualiza cuenta para: ".concat(account.getNames()));
                     RESPONSE.setBody("Cuenta actualizada exitosamente.");
@@ -99,10 +100,35 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> returnAccounts(UUID clientSecret, String mail, String profile) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, null, "");
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(accountRepository.findAllByBusinessIdAndProfile(accountSupervisor.getBusinessId(), profile));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> returnAccount(UUID clientSecret, String mail, String mailAccount) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, null, "");
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(accountRepository.findFirstByBusinessIdAndMail(accountSupervisor.getBusinessId(), mailAccount));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor, Account account, String option) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
         // Se debe autorizar OAuth2.0
+        if (!accountSupervisor.getProfile().equals("supervisor")) {
+            RESPONSE.setBody("Solo se permite acceder a información de las cuentas desde una cuenta de supervisor");
+            RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
+            return;
+        }
         if (validationService.validateClientSecret(clientId, clientSecret)) {
             RESPONSE.setBody("el clientSecret no es válido para el clientId informado");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
@@ -122,4 +148,5 @@ public class AccountService {
             }
         }
     }
+
 }

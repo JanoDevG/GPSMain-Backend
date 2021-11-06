@@ -14,9 +14,11 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    @GetMapping({"/admin", "/backoffce", "/supervisor", "/manager"})
+    @GetMapping()
     public ResponseEntity<Response> loginAdmin(@RequestHeader(value = "Xmail") String mail,
                                                @RequestHeader(value = "Xpassword") String password){
         return loginService.loginAccount(mail, password);
     }
+
+
 }
