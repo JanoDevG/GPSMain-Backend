@@ -22,4 +22,6 @@ public interface GPSRepository extends MongoRepository<GPS, String> {
 
     GPS findByIdAndClientId(ObjectId id, UUID clientId);
 
+    int countByIsInstalledAndClientId(boolean isInstalled, UUID clientId);
+
 }

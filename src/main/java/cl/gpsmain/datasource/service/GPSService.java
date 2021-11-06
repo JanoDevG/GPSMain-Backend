@@ -78,6 +78,13 @@ public class GPSService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> getAllGPSAvailable(String mail) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(gpsRepository.countByIsInstalledAndClientId(false, accountSupervisor.getBusinessId()));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);

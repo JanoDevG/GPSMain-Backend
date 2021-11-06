@@ -31,4 +31,9 @@ public class GPSController {
         return gpsService.gpsService(clientSecret, mail, option, gpsId);
     }
 
+    @GetMapping(path = "get-count-gps-available")
+    public ResponseEntity<Response> getCountGPSAvailable(@RequestHeader("Xmail") String mail) {
+        return gpsService.getAllGPSAvailable(mail);
+    }
+
 }

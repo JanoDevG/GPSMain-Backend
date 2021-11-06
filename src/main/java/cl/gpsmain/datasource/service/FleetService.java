@@ -90,6 +90,11 @@ public class FleetService {
         switch (option) {
             case "ASSIGNER":
                 fleet = fleetRepository.findByPatent(fleetPatent);
+                if (fleet.getGpsAssigned() != null) {
+                    RESPONSE.setBody("No se puede asignar GPS a la flota porque ya tiene uno asignado | ID GPS Asignado: ".concat(fleet.getGpsAssigned()));
+                    RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+                    break;
+                }
                 List<GPS> gPSs = gpsRepository.findAllByIsInstalledAndClientId(false, accountSupervisor.getBusinessId());
                 if (gPSs.size() == 0) {
                     RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
@@ -109,21 +114,26 @@ public class FleetService {
                 break;
             case "REMOVE":
                 fleet = fleetRepository.findByPatent(fleetPatent);
+                if (fleet.getGpsAssigned() == null) {
+                    RESPONSE.setBody("La flota con patente: ".concat(fleet.getPatent()).concat(" no tiene un GPS Asignado"));
+                    RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+                    break;
+                }
                 GPS gps = gpsRepository.findByIdAndClientId(new ObjectId(fleet.getGpsAssigned()), accountSupervisor.getBusinessId());
                 fleet.setGpsAssigned(null);
                 gps.setInstalled(false);
                 gps.setActive(false);
-                updateDocumentMongoDB.updateFleet(fleet);
-                updateDocumentMongoDB.updateGPS(gps);
                 activityService.logActivity(accountSupervisor, "Desvinculación GPS a flota", "Se desvincula GPS con ID: "
-                        .concat(gps.getId()
-                                .concat(" de flota con patente: ")
-                                .concat(fleet.getId())));
+                        .concat(gps.getId())
+                        .concat(" de la flota con patente: ")
+                        .concat(fleet.getId()));
                 RESPONSE.setStatus(HttpStatus.OK);
                 RESPONSE.setBody("A la flota con patente: "
                         .concat(fleet.getPatent())
-                        .concat(" se le ha removido el GPS con ID: "
-                                .concat(gps.getId())));
+                        .concat(" se le ha removido el GPS con ID: ")
+                        .concat(gps.getId()));
+                updateDocumentMongoDB.updateFleet(fleet);
+                updateDocumentMongoDB.updateGPS(gps);
                 break;
             default:
                 RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: Xoption)."));
