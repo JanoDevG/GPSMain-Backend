@@ -58,10 +58,17 @@ public class FleetService {
                 RESPONSE.setBody("flota Creada exitosamente. ID: ".concat(fleet.getId()));
                 break;
             case "DELETE":
-                fleetRepository.deleteByPatent(fleetPatent);
-                activityService.logActivity(accountSupervisor, "Elimianción Flota", "Flota con patente: ".concat(fleetPatent));
-                RESPONSE.setStatus(HttpStatus.OK);
-                RESPONSE.setBody("Flota con patente: ".concat(fleetPatent).concat(" eliminado exitosamente."));
+                GPS gps = gpsRepository.findByIdAndClientId(new ObjectId(fleet.getGpsAssigned()), accountSupervisor.getBusinessId());
+                if (gps != null) {
+                    gps.setActive(false);
+                    gps.setInstalled(false);
+                    updateDocumentMongoDB.updateGPS(gps);
+                } else {
+                    fleetRepository.deleteByPatent(fleetPatent);
+                    activityService.logActivity(accountSupervisor, "Elimianción Flota", "Flota con patente: ".concat(fleetPatent));
+                    RESPONSE.setStatus(HttpStatus.OK);
+                    RESPONSE.setBody("Flota con patente: ".concat(fleetPatent).concat(" eliminado exitosamente."));
+                }
                 break;
             default:
                 RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: Xoption)."));
