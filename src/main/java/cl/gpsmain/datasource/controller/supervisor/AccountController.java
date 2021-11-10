@@ -1,6 +1,7 @@
 package cl.gpsmain.datasource.controller.supervisor;
 
 import cl.gpsmain.datasource.model.Account;
+import cl.gpsmain.datasource.model.GPS;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,18 @@ public class AccountController {
 
     @GetMapping(path = "/get-account")
     public ResponseEntity<Response> returnAccount(@RequestHeader("Xmail") String mail,
-                                                   @RequestHeader("XclientSecret") UUID clientSecret,
+                                                  @RequestHeader("XclientSecret") UUID clientSecret,
                                                   @RequestHeader("XmailAccount") String mailAccount) {
         return accountService.returnAccount(clientSecret, mail, mailAccount);
+    }
+
+    @PostMapping(path = "/assigned-gps")
+    public ResponseEntity<Response> assignedGPS(@RequestHeader("Xmail") String mail,
+                                                @RequestHeader("XclientSecret") UUID clientSecret,
+                                                @RequestHeader("XmailAccount") String mailAccount,
+                                                @RequestHeader("XOption") String option,
+                                                @RequestBody() GPS gps) {
+        return accountService.assignedGPS(clientSecret, mail, gps, mailAccount, option);
     }
 
 }

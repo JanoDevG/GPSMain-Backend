@@ -3,10 +3,13 @@ package cl.gpsmain.datasource.service;
 import cl.gpsmain.datasource.config.UpdateDocumentMongoDB;
 import cl.gpsmain.datasource.model.Account;
 import cl.gpsmain.datasource.model.Activity;
+import cl.gpsmain.datasource.model.GPS;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
+import cl.gpsmain.datasource.service.repository.GPSRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +33,17 @@ public class AccountService {
     @Autowired
     private ValidationService validationService;
 
+    @Autowired
+    private GPSRepository gpsRepository;
+
     private static final Response RESPONSE = new Response();
 
     public ResponseEntity<Response> accountService(Account account, UUID clientSecret, String option, String mail, String mailDeleteAccount) {
         Account accountSupervisor = accountRepository.findFirstByMail(mail);
         Account acc;
-        if (mailDeleteAccount != null){
+        if (mailDeleteAccount != null) {
             acc = accountRepository.findFirstByMail(mailDeleteAccount);
-        }else{
+        } else {
             acc = accountRepository.findFirstByMail(account.getMail());
         }
         validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, acc, option);
@@ -117,6 +123,61 @@ public class AccountService {
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         RESPONSE.setStatus(HttpStatus.OK);
         RESPONSE.setBody(accountRepository.findFirstByBusinessIdAndMail(accountSupervisor.getBusinessId(), mailAccount));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> assignedGPS(UUID clientSecret, String mail, GPS gps, String mailAccount, String option) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, null, "");
+        if (RESPONSE.getStatus().isError()) {
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        }
+        Account account = accountRepository.findFirstByMail(mailAccount);
+        if (!account.getBusinessId().equals(accountSupervisor.getBusinessId())) {
+            RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+            RESPONSE.setBody("La cuenta con correo: ".concat(mailAccount).concat(" no pertenece a su organización."));
+        } else {
+            GPS gpsFinded = gpsRepository.findByIdAndClientId(new ObjectId(gps.getId()), accountSupervisor.getBusinessId());
+            switch (option) {
+                case "ASSIGNER":
+                    //if (account.getGPSAssigned().stream().noneMatch(gps1 -> gps1.getId().equals(gpsFinded.getId()))) {
+                    //    RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+                    //    RESPONSE.setBody("El GPS con ID: "
+                    //            .concat(gpsFinded.getId())
+                    //            .concat(" ya está asignado a este usuario"));
+                      {
+                        account.getGPSAssigned().add(gpsFinded);
+                        updateDocumentMongoDB.updateAccount(account);
+                        activityService.logActivity(accountSupervisor, "Asignación de GPS nuevo", "Se asigna el GPS con ID: "
+                                .concat(gpsFinded.getId())
+                                .concat(" al usuario :")
+                                .concat(account.getNames()));
+                        RESPONSE.setStatus(HttpStatus.OK);
+                        RESPONSE.setBody("El GPS con ID: "
+                                .concat(gpsFinded.getId())
+                                .concat(" fue asignado a: ")
+                                .concat(account.getNames()));
+                    }
+                    break;
+                case "REMOVE":
+                    account.getGPSAssigned().removeIf(gps1 -> gps1.getId().equals(gpsFinded.getId()));
+                    updateDocumentMongoDB.updateAccount(account);
+                    activityService.logActivity(accountSupervisor, "Eliminación de GPS asignado", "Se elimina el GPS con ID: "
+                            .concat(gpsFinded.getId())
+                            .concat(" al usuario: ")
+                            .concat(account.getNames()));
+                    RESPONSE.setStatus(HttpStatus.OK);
+                    RESPONSE.setBody("Se elimina el GPS con ID: "
+                            .concat(gpsFinded.getId())
+                            .concat(" Al usuario: ")
+                            .concat(account.getNames()));
+                    break;
+                default:
+                    RESPONSE.setBody("la opción: ".concat(option).concat(" no es válida (Header: X-option)."));
+                    RESPONSE.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
+                    break;
+            }
+        }
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 

@@ -40,7 +40,12 @@ public class Account {
     private List<Activity> activity;
 
     @JsonProperty("GPSAssigned")
-    @Getter
+    public List<GPS> getGPSAssigned(){
+        if (this.gPSAssigned == null){
+            this.gPSAssigned = new ArrayList<>();
+        }
+        return this.gPSAssigned;
+    }
     @Setter
     private List<GPS> gPSAssigned;
 
