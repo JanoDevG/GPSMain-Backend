@@ -1,11 +1,14 @@
 package cl.gpsmain.datasource.service;
 
+import cl.gpsmain.datasource.config.UpdateDocumentMongoDB;
 import cl.gpsmain.datasource.model.Account;
+import cl.gpsmain.datasource.model.Fleet;
 import cl.gpsmain.datasource.model.GPS;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
+import cl.gpsmain.datasource.service.repository.FleetRepository;
 import cl.gpsmain.datasource.service.repository.GPSRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,12 @@ public class GPSService {
     @Autowired
     private ValidationService validationService;
 
+    @Autowired
+    private FleetRepository fleetRepository;
+
+    @Autowired
+    private UpdateDocumentMongoDB updateDocumentMongoDB;
+
     private static final Response RESPONSE = new Response();
 
     public ResponseEntity<Response> gpsService(UUID clientSecret, String mail, String option, String gpsId) {
@@ -55,6 +64,9 @@ public class GPSService {
                 RESPONSE.setBody(GPSs);
                 break;
             case "DELETE":
+                Fleet fleet = fleetRepository.findByGpsAssigned(gpsId);
+                fleet.setGpsAssigned(null);
+                updateDocumentMongoDB.updateFleet(fleet);
                 gpsRepository.deleteById(new ObjectId(gpsId));
                 activityService.logActivity(accountSupervisor, "Elimianción GPS", "Se elimina GPS con ID: ".concat(gpsId));
                 RESPONSE.setStatus(HttpStatus.OK);

@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -52,6 +51,7 @@ public class FleetService {
             case "CREATE":
                 fleet.setId(new ObjectId().toString());
                 fleet.setBusinessId(accountSupervisor.getBusinessId());
+                fleet.setGpsAssigned(null);
                 fleetRepository.insert(fleet);
                 activityService.logActivity(accountSupervisor, "Creación Flota", "Creación de nueva Flota | ID: ".concat(fleet.getId()));
                 RESPONSE.setStatus(HttpStatus.CREATED);

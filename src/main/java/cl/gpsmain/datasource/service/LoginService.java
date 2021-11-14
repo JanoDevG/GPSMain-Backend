@@ -20,6 +20,9 @@ public class LoginService {
         Account account = loginRepository.findByMailAndPassword(email, password);
         if (account != null) {
             RESPONSE.setStatus(HttpStatus.OK);
+            // Omitir información no requerida
+            account.setPassword(null);
+            account.setActivity(null);
             RESPONSE.setBody(account);
         } else {
             RESPONSE.setStatus(HttpStatus.NOT_FOUND);

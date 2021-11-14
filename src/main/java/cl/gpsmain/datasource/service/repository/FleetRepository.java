@@ -1,6 +1,7 @@
 package cl.gpsmain.datasource.service.repository;
 
 import cl.gpsmain.datasource.model.Fleet;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface FleetRepository extends MongoRepository <Fleet, String> {
     void deleteByPatent(String patent);
 
     Fleet findByPatent(String patent);
+
+    Fleet findByGpsAssigned(String gpsAssigned);
 }
