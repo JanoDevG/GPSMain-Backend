@@ -58,17 +58,27 @@ public class FleetService {
                 RESPONSE.setBody("flota Creada exitosamente. ID: ".concat(fleet.getId()));
                 break;
             case "DELETE":
-                GPS gps = gpsRepository.findByIdAndClientId(new ObjectId(fleet.getGpsAssigned()), accountSupervisor.getBusinessId());
-                if (gps != null) {
-                    gps.setActive(false);
-                    gps.setInstalled(false);
-                    updateDocumentMongoDB.updateGPS(gps);
-                } else {
-                    fleetRepository.deleteByPatent(fleetPatent);
-                    activityService.logActivity(accountSupervisor, "Elimianción Flota", "Flota con patente: ".concat(fleetPatent));
-                    RESPONSE.setStatus(HttpStatus.OK);
-                    RESPONSE.setBody("Flota con patente: ".concat(fleetPatent).concat(" eliminado exitosamente."));
+                Fleet removeFleet = fleetRepository.findByPatent(fleetPatent);
+                GPS gps = null;
+                if (removeFleet.getGpsAssigned() != null) {
+                    gps = gpsRepository.findByIdAndClientId(new ObjectId(fleet.getGpsAssigned()), accountSupervisor.getBusinessId());
+                    if (gps != null) {
+                        gps.setActive(false);
+                        gps.setInstalled(false);
+                        updateDocumentMongoDB.updateGPS(gps);
+                    }
                 }
+                fleetRepository.deleteByPatent(fleetPatent);
+                activityService.logActivity(accountSupervisor, "Elimianción Flota", "Flota con patente: "
+                        .concat(fleetPatent)
+                        .concat((gps != null)
+                                ? " Con GPS asignado | ID GPS: ".concat(gps.getId())
+                                : " sin GPS asignado"));
+                RESPONSE.setStatus(HttpStatus.OK);
+                RESPONSE.setBody("Flota con patente: ".concat(fleetPatent).concat(" eliminado exitosamente"
+                        .concat((gps != null)
+                                ? " Con GPS asignado | ID GPS: ".concat(gps.getId())
+                                : " sin GPS asignado")));
                 break;
             default:
                 RESPONSE.setBody("la operación: ".concat(option).concat(" no es válida (Header: Xoption)."));

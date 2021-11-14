@@ -24,7 +24,7 @@ public class FleetController {
     }
 
     @RequestMapping(method = {RequestMethod.DELETE, RequestMethod.POST},
-            path = {"create-fleet", "delete-fleet"})
+            path = {"/create-fleet", "/delete-fleet"})
     public ResponseEntity<Response> fleetService(@RequestHeader("XclientSecret") UUID clientSecret,
                                                  @RequestHeader("Xmail") String mail,
                                                  @RequestHeader("Xoption") String option,
@@ -34,11 +34,11 @@ public class FleetController {
     }
 
     @RequestMapping(method = RequestMethod.POST,
-            path = {"assigned-gps", "remove-gps"})
+            path = {"/assigned-gps", "/remove-gps"})
     public ResponseEntity<Response> assignedFleet(@RequestHeader("XclientSecret") UUID clientSecret,
                                                   @RequestHeader("Xmail") String mail,
                                                   @RequestHeader("Xoption") String option,
-                                                  @RequestHeader(value = "XFleetPatent", required = false) String fleetPatent) {
+                                                  @RequestHeader(value = "XfleetPatent", required = false) String fleetPatent) {
         return fleetService.assignedFleet(clientSecret, mail, option, fleetPatent);
     }
 
