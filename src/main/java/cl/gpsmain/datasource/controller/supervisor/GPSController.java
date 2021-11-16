@@ -1,5 +1,6 @@
 package cl.gpsmain.datasource.controller.supervisor;
 
+import cl.gpsmain.datasource.model.GPS;
 import cl.gpsmain.datasource.model.Response;
 import cl.gpsmain.datasource.service.GPSService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,20 @@ public class GPSController {
     @GetMapping(path = "get-count-gps-available")
     public ResponseEntity<Response> getCountGPSAvailable(@RequestHeader("Xmail") String mail) {
         return gpsService.getAllGPSAvailable(mail);
+    }
+
+    @PutMapping(path = "activate-gps")
+    public ResponseEntity<Response> activateGPS(@RequestHeader("XclientSecret") UUID clientSecret,
+                                                @RequestHeader("Xmail") String mail,
+                                                @RequestBody() GPS gps) {
+        return gpsService.activateGPS(clientSecret, mail, gps);
+    }
+
+    @PutMapping(path = "invalidate-gps")
+    public ResponseEntity<Response> invalidateGPS(@RequestHeader("XclientSecret") UUID clientSecret,
+                                                @RequestHeader("Xmail") String mail,
+                                                @RequestBody() GPS gps) {
+        return gpsService.invalidateGPS(clientSecret, mail, gps);
     }
 
 }

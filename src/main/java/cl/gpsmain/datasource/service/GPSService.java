@@ -97,6 +97,34 @@ public class GPSService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> activateGPS(UUID clientSecret, String mail, GPS gps) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor);
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        gps.setActive(true);
+        activityService.logActivity(accountSupervisor, "Activación de GPS", "Se activa GPS con ID: "
+                .concat(gps.getId()));
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody("Se activa GPS con ID: ".concat(gps.getId()));
+        updateDocumentMongoDB.updateGPS(gps);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> invalidateGPS(UUID clientSecret, String mail, GPS gps) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mail);
+        validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor);
+        if (RESPONSE.getStatus().isError())
+            return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
+        gps.setActive(false);
+        activityService.logActivity(accountSupervisor, "Desactivación de GPS", "Se desactiva GPS con ID: "
+                .concat(gps.getId()));
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody("Se desactiva GPS con ID: ".concat(gps.getId()));
+        updateDocumentMongoDB.updateGPS(gps);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
