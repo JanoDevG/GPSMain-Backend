@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController("LoginController")
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 @RequestMapping(path = "/api/login")
@@ -16,9 +18,14 @@ public class LoginController {
 
     @GetMapping()
     public ResponseEntity<Response> loginAdmin(@RequestHeader(value = "Xmail") String mail,
-                                               @RequestHeader(value = "Xpassword") String password){
+                                               @RequestHeader(value = "Xpassword") String password) {
         return loginService.loginAccount(mail, password);
     }
 
+    @GetMapping("/getClientSecret")
+    public ResponseEntity<Response> getClientSecret(@RequestHeader(value = "Xmail") String mail,
+                                                    @RequestHeader(value = "XclientId") UUID clientId) {
+        return loginService.getClientId(mail, clientId);
+    }
 
 }

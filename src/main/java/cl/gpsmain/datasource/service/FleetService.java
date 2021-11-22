@@ -164,7 +164,7 @@ public class FleetService {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
         // Se debe autorizar OAuth2.0
-        if (!accountSupervisor.getProfile().equals("supervisor")) {
+        if (!accountSupervisor.getProfile().equals("supervisor") && !accountSupervisor.getProfile().equals("backoffice")) {
             RESPONSE.setBody("Solo se permite acceder a información de los GPS desde una cuenta de supervisor");
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
             return;
