@@ -10,6 +10,7 @@ import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
 import cl.gpsmain.datasource.service.repository.FleetRepository;
 import cl.gpsmain.datasource.service.repository.GPSRepository;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,8 +66,10 @@ public class GPSService {
                 break;
             case "DELETE":
                 Fleet fleet = fleetRepository.findByGpsAssigned(gpsId);
-                fleet.setGpsAssigned(null);
-                updateDocumentMongoDB.updateFleet(fleet);
+                if (fleet != null) {
+                    fleet.setGpsAssigned(null);
+                    updateDocumentMongoDB.updateFleet(fleet);
+                }
                 gpsRepository.deleteById(new ObjectId(gpsId));
                 activityService.logActivity(accountSupervisor, "Elimianción GPS", "Se elimina GPS con ID: ".concat(gpsId));
                 RESPONSE.setStatus(HttpStatus.OK);
