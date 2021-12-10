@@ -2,6 +2,7 @@ package cl.gpsmain.datasource.controller.supervisor;
 
 import cl.gpsmain.datasource.model.GPS;
 import cl.gpsmain.datasource.model.Response;
+import cl.gpsmain.datasource.model.Trip;
 import cl.gpsmain.datasource.service.GPSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +47,19 @@ public class GPSController {
 
     @PutMapping(path = "invalidate-gps")
     public ResponseEntity<Response> invalidateGPS(@RequestHeader("XclientSecret") UUID clientSecret,
-                                                @RequestHeader("Xmail") String mail,
-                                                @RequestBody() GPS gps) {
+                                                  @RequestHeader("Xmail") String mail,
+                                                  @RequestBody() GPS gps) {
         return gpsService.invalidateGPS(clientSecret, mail, gps);
+    }
+
+    @PutMapping(path = "inset-coordinates")
+    public ResponseEntity<Response> insertCoordinates(@RequestBody() Trip trip) {
+        return gpsService.insertCoordinates(trip);
+    }
+
+    @PostMapping(path = "inset-trip")
+    public ResponseEntity<Response> insertTrip(@RequestBody() Trip trip) {
+        return gpsService.insertTrip(trip);
     }
 
 }

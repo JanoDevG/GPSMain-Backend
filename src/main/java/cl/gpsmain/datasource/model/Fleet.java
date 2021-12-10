@@ -6,6 +6,8 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Document(collection = "fleet")
@@ -46,4 +48,15 @@ public class Fleet {
     @Getter
     @Setter
     private short year;
+
+    public List<Trip> getTrip() {
+        if (this.trip == null) {
+            this.trip = new ArrayList<>();
+        }
+        return trip;
+    }
+
+    @JsonProperty("viajes")
+    @Setter
+    private List<Trip> trip;
 }

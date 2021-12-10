@@ -1,10 +1,7 @@
 package cl.gpsmain.datasource.service;
 
 import cl.gpsmain.datasource.config.UpdateDocumentMongoDB;
-import cl.gpsmain.datasource.model.Account;
-import cl.gpsmain.datasource.model.Fleet;
-import cl.gpsmain.datasource.model.GPS;
-import cl.gpsmain.datasource.model.Response;
+import cl.gpsmain.datasource.model.*;
 import cl.gpsmain.datasource.service.core.ActivityService;
 import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Service
 public class GPSService {
@@ -125,6 +123,34 @@ public class GPSService {
         RESPONSE.setStatus(HttpStatus.OK);
         RESPONSE.setBody("Se desactiva GPS con ID: ".concat(gps.getId()));
         updateDocumentMongoDB.updateGPS(gps);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> insertCoordinates(Trip trip) {
+        Fleet fleet = fleetRepository.findByPatent(trip.getPatent());
+        if (fleet != null) {
+            fleet.getTrip().set(IntStream.range(0, fleet.getTrip().size()).filter(value -> trip.getDestiny().getDestiny().equals(fleet.getTrip().get(value))).findFirst().getAsInt(), trip);
+            updateDocumentMongoDB.updateFleet(fleet);
+            RESPONSE.setBody("Se agregó coordenadas para el viaje de: ".concat(trip.getDeparture().getDeparture()).concat(" hacia: ").concat(trip.getDestiny().getDestiny()));
+            RESPONSE.setStatus(HttpStatus.OK);
+        } else {
+            RESPONSE.setBody("No se encontró flota con la patente: ".concat(trip.getPatent()));
+            RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> insertTrip(Trip trip) {
+        Fleet fleet = fleetRepository.findByPatent(trip.getPatent());
+        if (fleet != null) {
+            fleet.getTrip().add(trip);
+            updateDocumentMongoDB.updateFleet(fleet);
+            RESPONSE.setBody("Se agregó el nuevo viaje para la flota: ".concat(fleet.getPatent()));
+            RESPONSE.setStatus(HttpStatus.OK);
+        } else {
+            RESPONSE.setBody("No se encontró flota con la patente: ".concat(trip.getPatent()));
+            RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
