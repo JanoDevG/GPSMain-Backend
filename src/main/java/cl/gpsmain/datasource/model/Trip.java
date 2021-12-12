@@ -36,7 +36,7 @@ public class Trip {
         @Setter
         private String departure;
 
-        public List<Integer> getCoordinates() {
+        public List<String> getCoordinates() {
             if (this.coordinates == null) {
                 this.coordinates = new ArrayList<>();
             }
@@ -45,7 +45,7 @@ public class Trip {
 
         @JsonProperty("coordenadas")
         @Setter
-        private List<Integer> coordinates;
+        private List<String> coordinates;
     }
 
     public static class Destiny {
@@ -55,7 +55,7 @@ public class Trip {
         @Setter
         private String destiny;
 
-        public List<Integer> getCoordinates() {
+        public List<String> getCoordinates() {
             if (this.coordinates == null) {
                 this.coordinates = new ArrayList<>();
             }
@@ -64,7 +64,7 @@ public class Trip {
 
         @JsonProperty("coordenadas")
         @Setter
-        private List<Integer> coordinates;
+        private List<String> coordinates;
     }
 
     public static class Coordinate {
@@ -72,7 +72,7 @@ public class Trip {
         @JsonProperty("coordenada")
         @Setter
         @Getter
-        private List<Integer> coordinate;
+        private List<String> coordinate;
 
         @JsonProperty("dia")
         @Getter
