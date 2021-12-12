@@ -1,6 +1,5 @@
 package cl.gpsmain.datasource.model;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,15 +9,9 @@ import java.util.List;
 
 public class Trip {
 
-    public List<Coordinate> getCoordinates() {
-        if (this.coordinates == null) {
-            this.coordinates = new ArrayList<>();
-        }
-        return coordinates;
-    }
-
     @JsonProperty("coordenadas")
     @Setter
+    @Getter
     private List<Coordinate> coordinates;
 
     @JsonProperty("partida")
@@ -36,7 +29,7 @@ public class Trip {
     @Setter
     private String patent;
 
-    public class Departure {
+    public static class Departure {
 
         @JsonProperty("partida")
         @Getter
@@ -55,7 +48,7 @@ public class Trip {
         private List<Integer> coordinates;
     }
 
-    public class Destiny {
+    public static class Destiny {
 
         @JsonProperty("destino")
         @Getter
@@ -74,23 +67,27 @@ public class Trip {
         private List<Integer> coordinates;
     }
 
-    public class Coordinate {
-
-        public List<Integer> getCoordinate() {
-            if (this.coordinate == null) {
-                this.coordinate = new ArrayList<>();
-            }
-            return coordinate;
-        }
+    public static class Coordinate {
 
         @JsonProperty("coordenada")
         @Setter
+        @Getter
         private List<Integer> coordinate;
+
+        @JsonProperty("dia")
+        @Getter
+        @Setter
+        private int day;
 
         @JsonProperty("hora")
         @Getter
         @Setter
         private int hour;
+
+        @JsonProperty("mes")
+        @Getter
+        @Setter
+        private int month;
 
         @JsonProperty("minuto")
         @Getter
@@ -101,16 +98,6 @@ public class Trip {
         @Getter
         @Setter
         private int second;
-
-        @JsonProperty("dia")
-        @Getter
-        @Setter
-        private int day;
-
-        @JsonProperty("mes")
-        @Getter
-        @Setter
-        private int month;
 
     }
 }

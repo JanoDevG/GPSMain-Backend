@@ -129,7 +129,10 @@ public class GPSService {
     public ResponseEntity<Response> insertCoordinates(Trip trip) {
         Fleet fleet = fleetRepository.findByPatent(trip.getPatent());
         if (fleet != null) {
-            fleet.getTrip().set(IntStream.range(0, fleet.getTrip().size()).filter(value -> trip.getDestiny().getDestiny().equals(fleet.getTrip().get(value))).findFirst().getAsInt(), trip);
+            int indexUpdating = IntStream.range(0, fleet.getTrip().size()).filter(value -> trip.getDestiny().getDestiny().equals(fleet.getTrip().get(value).getDestiny().getDestiny())).findFirst().orElse(-1);
+            if (indexUpdating >= 0) {
+                fleet.getTrip().set(indexUpdating, trip);
+            }
             updateDocumentMongoDB.updateFleet(fleet);
             RESPONSE.setBody("Se agregó coordenadas para el viaje de: ".concat(trip.getDeparture().getDeparture()).concat(" hacia: ").concat(trip.getDestiny().getDestiny()));
             RESPONSE.setStatus(HttpStatus.OK);
