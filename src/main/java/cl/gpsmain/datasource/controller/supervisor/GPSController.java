@@ -62,4 +62,14 @@ public class GPSController {
         return gpsService.insertTrip(trip);
     }
 
+    @PostMapping(path = "insert-new-route")
+    public ResponseEntity<Response> insertNewRoute(@RequestBody() String[] route) {
+        return gpsService.insertNewRoute(route);
+    }
+
+    @GetMapping(path = "get-trips")
+    public ResponseEntity<Response> getTrips(@RequestHeader("Xpatent") String patent) {
+        return gpsService.getTrips(patent);
+    }
+
 }

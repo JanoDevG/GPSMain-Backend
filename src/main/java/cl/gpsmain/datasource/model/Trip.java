@@ -9,24 +9,42 @@ import java.util.List;
 
 public class Trip {
 
+    public List<Coordinate> getCoordinates() {
+        if (this.coordinates == null) {
+            this.coordinates = new ArrayList<>();
+        }
+        return coordinates;
+    }
+
+    public Departure getDeparture() {
+        if (this.departure == null) {
+            this.departure = new Departure();
+        }
+        return departure;
+    }
+
+    public Destiny getDestiny() {
+        if (this.destiny == null) {
+            this.destiny = new Destiny();
+        }
+        return destiny;
+    }
+
     @JsonProperty("coordenadas")
     @Setter
-    @Getter
     private List<Coordinate> coordinates;
 
     @JsonProperty("partida")
-    @Getter
     @Setter
     private Departure departure;
 
     @JsonProperty("destino")
-    @Getter
     @Setter
     private Destiny destiny;
 
     @JsonProperty("patente")
-    @Getter
     @Setter
+    @Getter
     private String patent;
 
     public static class Departure {
@@ -69,9 +87,15 @@ public class Trip {
 
     public static class Coordinate {
 
+        public List<String> getCoordinate() {
+            if (this.coordinate == null) {
+                this.coordinate = new ArrayList<>();
+            }
+            return coordinate;
+        }
+
         @JsonProperty("coordenada")
         @Setter
-        @Getter
         private List<String> coordinate;
 
         @JsonProperty("dia")

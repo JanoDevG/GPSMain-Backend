@@ -157,6 +157,35 @@ public class GPSService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> insertNewRoute(String[] route) {
+        Fleet fleet = fleetRepository.findByPatent(route[2]);
+        if (fleet != null) {
+            Trip trip = new Trip();
+            trip.getDeparture().setDeparture(route[0]);
+            trip.getDestiny().setDestiny(route[1]);
+            fleet.getTrip().add(trip);
+            updateDocumentMongoDB.updateFleet(fleet);
+            RESPONSE.setBody("Ruta añadida correctamente");
+            RESPONSE.setStatus(HttpStatus.OK);
+        } else {
+            RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+            RESPONSE.setBody("No se encuentra la patente buscada");
+        }
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> getTrips(String patent) {
+        Fleet fleet = fleetRepository.findByPatent(patent);
+        if (fleet != null) {
+            RESPONSE.setBody(fleet.getTrip());
+            RESPONSE.setStatus(HttpStatus.OK);
+        } else {
+            RESPONSE.setBody(null);
+            RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
