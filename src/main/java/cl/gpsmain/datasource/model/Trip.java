@@ -83,6 +83,12 @@ public class Trip {
         @JsonProperty("coordenadas")
         @Setter
         private List<String> coordinates;
+
+        @JsonProperty("fin")
+        @Getter
+        @Setter
+        private boolean end;
+
     }
 
     public static class Coordinate {

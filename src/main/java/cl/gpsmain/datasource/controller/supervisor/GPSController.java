@@ -72,4 +72,10 @@ public class GPSController {
         return gpsService.getTrips(patent);
     }
 
+    @PostMapping(path = "delete-trip")
+    public ResponseEntity<Response> deleteTrip(@RequestHeader("Xpatent") String patent,
+                                               @RequestBody() Trip trip) {
+        return gpsService.deleteTrip(patent, trip);
+    }
+
 }

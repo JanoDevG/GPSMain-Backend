@@ -174,6 +174,34 @@ public class GPSService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> deleteTrip(String patent, Trip trip) {
+        Fleet fleet = fleetRepository.findByPatent(patent);
+        if (fleet != null) {
+            int indexUpdating = -1;
+            for (int i = 0; i < fleet.getTrip().size(); i++) {
+                if (trip.getDestiny().getDestiny().equals(fleet.getTrip().get(i).getDestiny().getDestiny())) {
+                    if (trip.getDeparture().getDeparture().equals(fleet.getTrip().get(i).getDeparture().getDeparture()))
+                        if (trip.getCoordinates().size() == fleet.getTrip().get(i).getCoordinates().size())
+                            indexUpdating = i;
+                    break;
+                }
+            }
+            if (indexUpdating >= 0) {
+                fleet.getTrip().remove(indexUpdating);
+                updateDocumentMongoDB.updateFleet(fleet);
+                RESPONSE.setBody(null);
+                RESPONSE.setStatus(HttpStatus.OK);
+            } else {
+                RESPONSE.setBody(null);
+                RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            RESPONSE.setBody(null);
+            RESPONSE.setStatus(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     public ResponseEntity<Response> getTrips(String patent) {
         Fleet fleet = fleetRepository.findByPatent(patent);
         if (fleet != null) {
