@@ -42,4 +42,9 @@ public class FleetController {
         return fleetService.assignedFleet(clientSecret, mail, option, fleetPatent);
     }
 
+    @GetMapping("get-fleets-backoffice")
+    public ResponseEntity<Response> getFleetsBackoffice(@RequestHeader("XmailAccount") String mailAccount) {
+        return fleetService.getFleetsBackoffice(mailAccount);
+    }
+
 }

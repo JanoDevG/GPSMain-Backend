@@ -41,13 +41,13 @@ public class Account {
 
     @JsonProperty("GPSAssigned")
     public List<GPS> getGPSAssigned(){
-        if (this.gPSAssigned == null){
-            this.gPSAssigned = new ArrayList<>();
+        if (this.GPSAssigned == null){
+            this.GPSAssigned = new ArrayList<>();
         }
-        return this.gPSAssigned;
+        return this.GPSAssigned;
     }
     @Setter
-    private List<GPS> gPSAssigned;
+    private List<GPS> GPSAssigned;
 
     @JsonProperty("names")
     @Getter

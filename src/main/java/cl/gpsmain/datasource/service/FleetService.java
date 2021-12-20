@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -98,6 +99,18 @@ public class FleetService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> getFleetsBackoffice(String mailAccount) {
+        Account account = accountRepository.findFirstByMail(mailAccount);
+        List<Fleet> fleets = new ArrayList<>();
+        for (GPS gps : account.getGPSAssigned()) {
+            Fleet fleet = fleetRepository.findByGpsAssigned(gps.getId());
+            fleets.add(fleet);
+        }
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(fleets);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     public ResponseEntity<Response> assignedFleet(UUID clientSecret, String mail, String option, String fleetPatent) {
         Account accountSupervisor = accountRepository.findFirstByMail(mail);
         validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor);
@@ -120,6 +133,7 @@ public class FleetService {
                 }
                 fleet.setGpsAssigned(gPSs.get(0).getId()); // Se asigna el primero disponible
                 gPSs.get(0).setInstalled(true);
+                fleet.setStatusGPS(gPSs.get(0).isActive());
                 updateDocumentMongoDB.updateGPS(gPSs.get(0));
                 updateDocumentMongoDB.updateFleet(fleet);
                 activityService.logActivity(accountSupervisor, "Vinculación GPS a flota", "Se vincula GPS con ID: "
@@ -138,6 +152,7 @@ public class FleetService {
                 }
                 GPS gps = gpsRepository.findByIdAndClientId(new ObjectId(fleet.getGpsAssigned()), accountSupervisor.getBusinessId());
                 fleet.setGpsAssigned(null);
+                fleet.setStatusGPS(false);
                 gps.setInstalled(false);
                 gps.setActive(false);
                 activityService.logActivity(accountSupervisor, "Desvinculación GPS a flota", "Se desvincula GPS con ID: "

@@ -78,4 +78,22 @@ public class GPSController {
         return gpsService.deleteTrip(patent, trip);
     }
 
+    @GetMapping(path = "get-gps-account-and-business")
+    public ResponseEntity<Response> getGPSAccountAndBusiness(@RequestHeader("Xmail") String mailSupervisor,
+                                                             @RequestHeader("XmailAccount") String mailAccount) {
+        return gpsService.getGPSAccountAndBusiness(mailSupervisor, mailAccount);
+    }
+
+    @PutMapping("assign-gps")
+    public ResponseEntity<Response> assignerGPS(@RequestHeader("XmailAccount") String mailAccount,
+                                                @RequestHeader("XgpsId") String gpsId) {
+        return gpsService.assignGPS(mailAccount, gpsId);
+    }
+
+    @PutMapping("remove-gps")
+    public ResponseEntity<Response> removeGPS(@RequestHeader("XmailAccount") String mailAccount,
+                                                @RequestHeader("XgpsId") String gpsId) {
+        return gpsService.removeGPS(mailAccount, gpsId);
+    }
+
 }

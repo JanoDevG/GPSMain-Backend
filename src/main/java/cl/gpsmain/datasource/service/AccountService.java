@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -116,6 +117,20 @@ public class AccountService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> getAccountLogger(String mailAccount) {
+        RESPONSE.setStatus(HttpStatus.OK);
+        RESPONSE.setBody(accountRepository.findFirstByMail(mailAccount));
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> getAllAccountsOfBusiness(String mailAccount) {
+        Account account = accountRepository.findFirstByMail(mailAccount);
+        List<Account> accountList = accountRepository.findAllByBusinessId(account.getBusinessId());
+        RESPONSE.setBody(accountList);
+        RESPONSE.setStatus(HttpStatus.OK);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     public ResponseEntity<Response> returnAccount(UUID clientSecret, String mail, String mailAccount) {
         Account accountSupervisor = accountRepository.findFirstByMail(mail);
         validations(accountSupervisor.getBusinessId(), clientSecret, accountSupervisor, null, "");
@@ -145,20 +160,20 @@ public class AccountService {
                     //    RESPONSE.setBody("El GPS con ID: "
                     //            .concat(gpsFinded.getId())
                     //            .concat(" ya está asignado a este usuario"));
-                      {
-                        account.getGPSAssigned().add(gpsFinded);
-                        updateDocumentMongoDB.updateAccount(account);
-                        activityService.logActivity(accountSupervisor, "Asignación de GPS nuevo", "Se asigna el GPS con ID: "
-                                .concat(gpsFinded.getId())
-                                .concat(" al usuario :")
-                                .concat(account.getNames()));
-                        RESPONSE.setStatus(HttpStatus.OK);
-                        RESPONSE.setBody("El GPS con ID: "
-                                .concat(gpsFinded.getId())
-                                .concat(" fue asignado a: ")
-                                .concat(account.getNames()));
-                    }
-                    break;
+                {
+                    account.getGPSAssigned().add(gpsFinded);
+                    updateDocumentMongoDB.updateAccount(account);
+                    activityService.logActivity(accountSupervisor, "Asignación de GPS nuevo", "Se asigna el GPS con ID: "
+                            .concat(gpsFinded.getId())
+                            .concat(" al usuario :")
+                            .concat(account.getNames()));
+                    RESPONSE.setStatus(HttpStatus.OK);
+                    RESPONSE.setBody("El GPS con ID: "
+                            .concat(gpsFinded.getId())
+                            .concat(" fue asignado a: ")
+                            .concat(account.getNames()));
+                }
+                break;
                 case "REMOVE":
                     account.getGPSAssigned().removeIf(gps1 -> gps1.getId().equals(gpsFinded.getId()));
                     updateDocumentMongoDB.updateAccount(account);

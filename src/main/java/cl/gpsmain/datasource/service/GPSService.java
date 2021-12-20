@@ -7,7 +7,9 @@ import cl.gpsmain.datasource.service.core.ValidationService;
 import cl.gpsmain.datasource.service.repository.AccountRepository;
 import cl.gpsmain.datasource.service.repository.FleetRepository;
 import cl.gpsmain.datasource.service.repository.GPSRepository;
-import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -104,6 +106,11 @@ public class GPSService {
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         gps.setActive(true);
+        Fleet fleet = fleetRepository.findByGpsAssigned(gps.getId());
+        if (fleet != null) {
+            fleet.setStatusGPS(true);
+            updateDocumentMongoDB.updateFleet(fleet);
+        }
         activityService.logActivity(accountSupervisor, "Activación de GPS", "Se activa GPS con ID: "
                 .concat(gps.getId()));
         RESPONSE.setStatus(HttpStatus.OK);
@@ -118,6 +125,11 @@ public class GPSService {
         if (RESPONSE.getStatus().isError())
             return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus()); // capa de validaciones no aprobada se detiene flujo para enviar Response
         gps.setActive(false);
+        Fleet fleet = fleetRepository.findByGpsAssigned(gps.getId());
+        if (fleet != null) {
+            fleet.setStatusGPS(false);
+            updateDocumentMongoDB.updateFleet(fleet);
+        }
         activityService.logActivity(accountSupervisor, "Desactivación de GPS", "Se desactiva GPS con ID: "
                 .concat(gps.getId()));
         RESPONSE.setStatus(HttpStatus.OK);
@@ -174,6 +186,21 @@ public class GPSService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> getGPSAccountAndBusiness(String mailSupervisor, String mailAccount) {
+        Account accountSupervisor = accountRepository.findFirstByMail(mailSupervisor);
+        List<GPS> gpsAccount = accountRepository.findFirstByMail(mailAccount).getGPSAssigned();
+        List<GPS> gpsBusiness = gpsRepository.findAllByClientId(accountSupervisor.getBusinessId());
+        for (GPS gps : gpsAccount) {
+            gpsBusiness.removeIf(gps2 -> gps2.getId().equals(gps.getId()));
+        }
+        ResponseGPSs responseGPSs = new ResponseGPSs();
+        responseGPSs.setGpsAccount(gpsAccount);
+        responseGPSs.setGpsBusiness(gpsBusiness);
+        RESPONSE.setBody(responseGPSs);
+        RESPONSE.setStatus(HttpStatus.OK);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     public ResponseEntity<Response> deleteTrip(String patent, Trip trip) {
         Fleet fleet = fleetRepository.findByPatent(patent);
         if (fleet != null) {
@@ -214,6 +241,31 @@ public class GPSService {
         return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
     }
 
+    public ResponseEntity<Response> assignGPS(String mailAccount, String gpsId) {
+        Account accountBackoffice = accountRepository.findFirstByMail(mailAccount);
+        GPS gps = gpsRepository.findByIdAndClientId(new ObjectId(gpsId), accountBackoffice.getBusinessId());
+        accountBackoffice.getGPSAssigned().add(gps);
+        updateDocumentMongoDB.updateAccount(accountBackoffice);
+        RESPONSE.setBody(null);
+        RESPONSE.setStatus(HttpStatus.OK);
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
+    public ResponseEntity<Response> removeGPS(String mailAccount, String gpsId) {
+        Account accountBackoffice = accountRepository.findFirstByMail(mailAccount);
+        GPS gps = gpsRepository.findByIdAndClientId(new ObjectId(gpsId), accountBackoffice.getBusinessId());
+        boolean remove = accountBackoffice.getGPSAssigned().removeIf(gps1 -> gps1.getId().equals(gps.getId()));
+        if (remove) {
+            RESPONSE.setBody(null);
+            RESPONSE.setStatus(HttpStatus.OK);
+            updateDocumentMongoDB.updateAccount(accountBackoffice);
+        } else {
+            RESPONSE.setBody("No se pudo eliminar el GPS Asignado");
+            RESPONSE.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(RESPONSE, RESPONSE.getStatus());
+    }
+
     private void validations(UUID clientId, UUID clientSecret, Account accountSupervisor) {
         RESPONSE.setBody(null);
         RESPONSE.setStatus(HttpStatus.OK);
@@ -234,5 +286,18 @@ public class GPSService {
             RESPONSE.setStatus(HttpStatus.UNAUTHORIZED);
 
         }
+    }
+
+    public static class ResponseGPSs {
+
+        @JsonProperty("gpsAccount")
+        @Getter
+        @Setter
+        private List<GPS> gpsAccount;
+
+        @JsonProperty("gpsBusiness")
+        @Getter
+        @Setter
+        private List<GPS> gpsBusiness;
     }
 }

@@ -16,6 +16,8 @@ public interface AccountRepository extends MongoRepository<Account, String> {
 
     List<Account> findAllByBusinessIdAndProfile(UUID businessId, String profile);
 
+    List<Account> findAllByBusinessId(UUID businessId);
+
     Account findFirstByBusinessIdAndMail(UUID businessId, String mail);
 
 }

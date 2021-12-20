@@ -29,6 +29,11 @@ public class Fleet {
     @Setter
     private String gpsAssigned;
 
+    @JsonProperty("statusGPS")
+    @Getter
+    @Setter
+    private boolean statusGPS;
+
     @JsonProperty("carName")
     @Getter
     @Setter
